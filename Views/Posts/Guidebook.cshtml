@@ -48,20 +48,7 @@
                             </div>
                             <p class="card-description">@(post.Content.Length > 150 ? post.Content.Substring(0, 150) + "..."
                                                             : post.Content)</p>
-                        <div class="card-actions">
-                            <a asp-action="Details" asp-route-id="@post.PostId" class="btn-details">
-                                <span>Xem Chi Tiết</span>
-                                <i class="arrow-icon"></i>
-                            </a>
-                            <div class="action-buttons">
-                                <a asp-action="Edit" asp-route-id="@post.PostId" class="btn-edit" title="Sửa">
-                                    <i class="edit-icon"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@post.PostId" class="btn-delete" title="Xóa">
-                                    <i class="delete-icon"></i>
-                                </a>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
                                 }

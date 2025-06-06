@@ -111,7 +111,7 @@ else
 
             </div>
             <button class="gallery-btn" id="viewAllPhotos">
-                <i class="fas fa-images"></i> Xem tất cả ảnh (@(Model.Images?.Count ?? 1))
+                <i class="fas fa-images"></i> Có tất cả (@(Model.Images?.Count ?? 1)) ảnh
             </button>
         </div>
     </section>
@@ -119,10 +119,6 @@ else
     <!-- Spot Details -->
     <div class="spot-content">
         <div class="spot-info">
-            @* <section class="spot-description">
-                <h2>Giới thiệu</h2>
-                <p>@Model.Description</p>
-            </section> *@
             @if (!string.IsNullOrEmpty(Model.Description))
             {
                 <section class="spot-description mb-4 card">
@@ -143,13 +139,6 @@ else
                             <p>@Model.Address</p>
                         </div>
                     </div>
-                    @* <div class="detail-item">
-                        <i class="fas fa-clock"></i>
-                        <div>
-                            <h3>Thời gian tham quan lý tưởng</h3>
-                            <p>Tháng 2 - Tháng 5 và Tháng 9 - Tháng 10</p>
-                        </div>
-                    </div> *@
                     @if (!string.IsNullOrEmpty(Model.IdealVisitTime))
                         {
                             <div class="detail-item">
@@ -167,13 +156,6 @@ else
                             <p>@Model.CreatedAt.ToString("dd/MM/yyyy")</p>
                         </div>
                     </div>
-                    @* <div class="detail-item">
-                        <i class="fas fa-concierge-bell"></i>
-                        <div>
-                            <h3>Dịch vụ</h3>
-                            <p>Resort, Khách sạn, Nhà hàng, Tour du lịch, Thể thao biển, Mua sắm</p>
-                        </div>
-                    </div> *@
                     
                         @if (!string.IsNullOrEmpty(Model.AvailableServices))
                         {
@@ -188,18 +170,6 @@ else
                 </div>
             </section>
 
-            @* <section class="spot-map">
-                <h2>Bản đồ</h2>
-                <div class="map-container">
-                    <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.0966890206833!2d105.78273807596354!3d21.02880648062325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab4cd0c66f05%3A0xea31563511af2e54!2zSMOyIFTDonkgKEhvw6BuIEtp4bq_bSk!5e0!3m2!1svi!2s!4v1682956590065!5m2!1svi!2s" 
-                        style="border:0;" 
-                        allowfullscreen="" 
-                        loading="lazy" 
-                        referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
-                </div>
-            </section> *@
             @if (!string.IsNullOrEmpty(Model.MapEmbedUrl))
             {
                 <section class="spot-map mb-4 card">
@@ -232,71 +202,9 @@ else
                 </section>
             }
 
-            @* <section class="spot-videos">
-                <h2>Video</h2>
-                <div class="videos-container">
-                    <div class="video-item">
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/l2KxczkJdn8"
-                            title="YouTube video player" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen></iframe>
-                        <p>Khám phá vẻ đẹp @Model.Name từ trên cao</p>
-                    </div>
-                </div>
-            </section> *@
-            @if (!string.IsNullOrEmpty(Model.VideoEmbedUrl))
-            {
-                <section class="spot-videos mb-4 card">
-                    <div class="card-header"><h2><i class="fab fa-youtube me-2"></i>Video</h2></div>
-                    <div class="card-body">
-                        <div class="videos-container">
-                            <div class="video-item">
-                                <iframe src="@Model.VideoEmbedUrl"
-                                        title="Video về @Model.Name"
-                                        frameborder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowfullscreen>
-                                </iframe>
-                            </div>
-                        </div>
-                        @* Optional: Add description for video if needed *@
-                        @* <p class="mt-2 text-center">Khám phá vẻ đẹp @Model.Name.</p> *@
-                    </div>
-                </section>
-            }
         </div>
 
         <aside class="spot-sidebar">
-            @* <div class="sidebar-widget weather-widget">
-                <h3><i class="fas fa-cloud-sun"></i> Thời tiết</h3>
-                <div class="weather-info">
-                    <div class="current-weather">
-                        <i class="fas fa-sun"></i>
-                        <div>
-                            <span class="temperature">30°C</span>
-                            <span class="condition">Nắng</span>
-                        </div>
-                    </div>
-                    <div class="forecast">
-                        <div class="forecast-day">
-                            <span>T2</span>
-                            <i class="fas fa-cloud-sun"></i>
-                            <span>29°C</span>
-                        </div>
-                        <div class="forecast-day">
-                            <span>T3</span>
-                            <i class="fas fa-cloud"></i>
-                            <span>28°C</span>
-                        </div>
-                        <div class="forecast-day">
-                            <span>T4</span>
-                            <i class="fas fa-sun"></i>
-                            <span>31°C</span>
-                        </div>
-                    </div>
-                </div>
-            </div> *@
-            @* Weather Widget - Dynamic from API *@
 <div class="sidebar-widget card mb-3">
     <div class="card-header"><h3 class="h5 mb-0"><i class="fas fa-cloud-sun me-2"></i>Thời tiết</h3></div>
     <div class="card-body">
@@ -351,11 +259,6 @@ else
     </div>
 </div>
 
-            @* <div class="sidebar-widget">
-                <h3><i class="fas fa-calendar-alt"></i> Thời điểm tốt nhất để đến</h3>
-                <p>Tháng 2 đến tháng 5 và tháng 9 đến tháng 10 là thời điểm lý tưởng để thăm @Model.Name với thời tiết
-                    dễ chịu, ít mưa.</p>
-            </div> *@
             @if (!string.IsNullOrEmpty(Model.IdealVisitTime))
             {
                 <div class="sidebar-widget card mb-3">
@@ -366,15 +269,6 @@ else
                 </div>
             }
 
-            @* <div class="sidebar-widget">
-                <h3><i class="fas fa-info-circle"></i> Mẹo du lịch</h3>
-                <ul class="tips-list">
-                    <li>Thuê xe máy là cách thuận tiện để khám phá khu vực</li>
-                    <li>Mang theo kem chống nắng và nón khi đi tham quan</li>
-                    <li>Thử các món đặc sản địa phương</li>
-                    <li>Tham khảo thời tiết trước khi đến</li>
-                </ul>
-            </div> *@
             @if (!string.IsNullOrEmpty(Model.TravelTips))
             {
                 <div class="sidebar-widget card mb-3">
@@ -389,104 +283,24 @@ else
                     </div>
                 </div>
             }
-
-            <div class="sidebar-widget">
-                <h3><i class="fas fa-map-signs"></i> Địa điểm lân cận</h3>
-                <ul class="nearby-places">
-                    @{
-                        // Giả định rằng bạn có thể truy cập danh sách địa điểm lân cận từ ViewBag hoặc một nguồn khác
-                        var nearbySpots = ViewBag.NearbySpots as List<TourismWeb.Models.TouristSpot> ?? new List<TourismWeb.Models.TouristSpot>();
-                        
-                        if (nearbySpots.Any())
-                        {
-                            foreach (var spot in nearbySpots)
-                            {
-                                <li class="nearby-places-item">
-                                    <img src="@spot.ImageUrl" alt="@spot.Name">
-                                    <div>
-                                        <h4>@spot.Name</h4>
-                                        <p>Cách spot.Distance km</p>
-                                    </div>
-                                </li>
-                            }
-                        }
-                        else
-                        {
-                            <li class="nearby-places-item">
-                                <img src="/images/phocohoian.jpg" alt="Địa điểm lân cận">
-                                <div>
-                                    <h4>Địa điểm lân cận</h4>
-                                    <p>Cách 30km</p>
-                                </div>
-                            </li>
-                        }
-                    }
-                </ul>
-            </div>
-
-            <div class="sidebar-widget">
-                <h3><i class="fas fa-book-open"></i> Cẩm nang du lịch</h3>
-                <ul class="travel-guide-list">
-                    <li>
-                        <a href="#">
-                            <i class="fas fa-file-alt"></i>
-                            <span>Hướng dẫn du lịch @Model.Name từ A-Z</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fas fa-utensils"></i>
-                            <span>Top 10 món ăn phải thử ở @Model.Name</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fas fa-route"></i>
-                            <span>Lịch trình 3 ngày khám phá @Model.Name</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="sidebar-widget">
-                <h3><i class="fas fa-hiking"></i> Trải nghiệm</h3>
-                <div class="experiences-list">
-                    @{
-                        // Giả định rằng bạn có thể truy cập danh sách trải nghiệm từ ViewBag hoặc một nguồn khác
-                        var experiences = ViewBag.Experiences as List<dynamic> ?? new List<dynamic>();
-                        
-                        if (experiences.Any())
-                        {
-                            foreach (var exp in experiences)
-                            {
-                                <div class="experience-item">
-                                    <img src="@exp.ImageUrl" alt="@exp.Title">
-                                    <div class="experience-info">
-                                        <h4>@exp.Title</h4>
-                                        <div class="experience-meta">
-                                            <span><i class="fas fa-star"></i> @exp.Rating</span>
-                                            <span><i class="fas fa-clock"></i> @exp.Duration</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="experience-item">
-                                <img src="/images/bana.jpg" alt="Trải nghiệm">
-                                <div class="experience-info">
-                                    <h4>Khám phá @Model.Name</h4>
-                                    <div class="experience-meta">
-                                        <span><i class="fas fa-star"></i> 4.8</span>
-                                        <span><i class="fas fa-clock"></i> 1 ngày</span>
-                                    </div>
-                                </div>
+            @if (!string.IsNullOrEmpty(Model.VideoEmbedUrl))
+            {
+                <section class="spot-videos mb-4 card">
+                    <div class="card-header"><h3 class="h5 mb-0"><i class="fab fa-youtube me-2"></i>Video</h3></div>
+                    <div class="card-body">
+                        <div class="videos-container">
+                            <div class="video-item">
+                                <iframe src="@Model.VideoEmbedUrl"
+                                        title="Video về @Model.Name"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen>
+                                </iframe>
                             </div>
-                        }
-                    }
-                </div>
-            </div>
+                        </div>
+                    </div>
+                </section>
+            }
         </aside>
     </div>
 
@@ -645,13 +459,7 @@ else
             class="btn btn-sm btn-warning">
                 Báo cáo
             </a>
-            @* <a asp-controller="Report" asp-action="Create" 
-            asp-route-targetType="User" 
-            asp-route-targetId="@review.User.UserId"
-            asp-route-reportedUserId="@review.User.UserId"
-            class="btn btn-sm btn-warning">
-                Báo cáo người dùng
-            </a> *@
+            
                 }
             }
             else
@@ -668,20 +476,6 @@ else
         </div>
     </section>
 
-    <!-- Action buttons -->
-    <div class="action-buttons">
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> Quay lại danh sách
-        </a>
-        <div>
-            <a asp-action="Edit" asp-route-id="@Model?.SpotId" class="btn btn-primary">
-                <i class="fas fa-edit"></i> Chỉnh sửa
-            </a>
-            <a asp-action="Delete" asp-route-id="@Model?.SpotId" class="btn btn-danger">
-                <i class="fas fa-trash-alt"></i> Xóa
-            </a>
-        </div>
-    </div>
 </main>
 
 <!-- Lightbox for images -->

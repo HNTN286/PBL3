@@ -73,33 +73,12 @@
                             </div>
                             <p class="card-description">@(item.Content.Length > 150 ? item.Content.Substring(0, 150) + "..."
                                                             : item.Content)</p>
-                        <div class="card-actions">
-                            <a asp-action="Details" asp-route-id="@item.PostId" class="btn-details">
-                                <span>Xem Chi Tiết</span>
-                                <i class="arrow-icon"></i>
-                            </a>
-                            <div class="action-buttons">
-                                <a asp-action="Edit" asp-route-id="@item.PostId" class="btn-edit" title="Sửa">
-                                    <i class="edit-icon"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@item.PostId" class="btn-delete" title="Xóa">
-                                    <i class="delete-icon"></i>
-                                </a>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
                                 }
             </div>
 
-            <!-- Pagination -->
-            <div class="tourism-pagination">
-                <a href="#" class="page-link disabled"><i class="prev-icon"></i></a>
-                <a href="#" class="page-link active">1</a>
-                <a href="#" class="page-link">2</a>
-                <a href="#" class="page-link">3</a>
-                <a href="#" class="page-link"><i class="next-icon"></i></a>
-            </div>
         </div>
     </div>
 </div>

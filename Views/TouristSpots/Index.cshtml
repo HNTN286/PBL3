@@ -101,17 +101,6 @@
                             <a asp-action="Index" asp-route-categoryId="@item.CategoryId"
                                 class="tag">@item.Category.Name</a>
                         </div>
-                        @* <div class="location-actions">
-                            <a asp-action="Details" asp-route-id="@item.SpotId" class="action-link details">
-                                <i class="fas fa-info-circle"></i> Chi tiết
-                            </a>
-                            <a asp-action="Edit" asp-route-id="@item.SpotId" class="action-link edit">
-                                <i class="fas fa-edit"></i> Sửa
-                            </a>
-                            <a asp-action="Delete" asp-route-id="@item.SpotId" class="action-link delete">
-                                <i class="fas fa-trash-alt"></i> Xóa
-                            </a>
-                        </div> *@
                     </div>
                 </div>
             }
@@ -121,10 +110,6 @@
                 <div class="empty-state animate__animated animate__fadeIn">
                     <div class="empty-icon"><i class="fas fa-map-marked-alt"></i></div>
                     <h3>Chưa có địa điểm du lịch nào</h3>
-                    <p>Hãy thêm địa điểm du lịch đầu tiên của bạn!</p>
-                    <a asp-action="Create" class="btn-add-first">
-                        <i class="fas fa-plus-circle"></i> Thêm địa điểm
-                    </a>
                 </div>
             }
         </div>
