@@ -1244,68 +1244,122 @@ public class AdminController : Controller
 
             return Json(viewModel);
         }
-    // Action để hiển thị trang quản lý người dùng
-    public async Task<IActionResult> Users(int pageNumber = 1, int pageSize = 10, string searchTerm = "", string roleFilter = "all", string statusFilter = "all")
-    {
-        // Truy vấn cơ bản, lấy tất cả User và include Posts để đếm
-        var query = _context.Users.Include(u => u.Posts).AsQueryable();
-
-        // TODO: Thêm logic lọc dựa trên searchTerm, roleFilter, statusFilter (sẽ phức tạp hơn)
-        // Ví dụ đơn giản cho searchTerm:
-        if (!string.IsNullOrEmpty(searchTerm))
-        {
-            query = query.Where(u => u.FullName.Contains(searchTerm) || u.Email.Contains(searchTerm) || u.Username.Contains(searchTerm));
-        }
-
-        // Ví dụ đơn giản cho roleFilter (giả sử Role là string):
-        if (!string.IsNullOrEmpty(roleFilter) && roleFilter != "all")
-        {
-            query = query.Where(u => u.Role == roleFilter);
-        }
-
-        // Ví dụ đơn giản cho statusFilter (giả sử bạn có thuộc tính UserStatus):
-        // Bạn cần thêm thuộc tính UserStatus vào model User
-        // public string UserStatus { get; set; } // Ví dụ: "Active", "Inactive", "Banned"
-        if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "all")
-        {
-            // query = query.Where(u => u.UserStatus == statusFilter); // Bỏ comment khi có UserStatus
-        }
-
-        var totalUsers = await query.CountAsync();
-        // Tính toán totalPages - RẤT QUAN TRỌNG
-        var totalPages = (totalUsers > 0 && pageSize > 0) ? (int)Math.Ceiling((double)totalUsers / pageSize) : 1;
-        // Đảm bảo pageNumber không vượt quá totalPages
-        if (pageNumber > totalPages)
-        {
-            pageNumber = totalPages;
-        }
-        if (pageNumber < 1)
-        {
-            pageNumber = 1;
-        }
-        var users = await query
-                            .OrderByDescending(u => u.CreatedAt) // Sắp xếp theo người dùng mới nhất
-                            .Skip((pageNumber - 1) * pageSize)
-                            .Take(pageSize)
-                            .ToListAsync();
-
-        ViewBag.Users = users;
-        ViewBag.TotalUsers = totalUsers;
-        ViewBag.PageNumber = pageNumber;
-        ViewBag.PageSize = pageSize;
-        // ViewBag.TotalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
-        ViewBag.TotalPages = totalPages; // Đảm bảo giá trị này đúng
-        // Truyền các giá trị filter hiện tại lại cho view để giữ trạng thái trên select box
-        ViewBag.SearchTerm = searchTerm;
-        ViewBag.RoleFilter = roleFilter;
-        ViewBag.StatusFilter = statusFilter;
-
-        return View();
-    }
-    // public IActionResult Settings()
+    // // Action để hiển thị trang quản lý người dùng
+    // public async Task<IActionResult> Users(int pageNumber = 1, int pageSize = 10, string searchTerm = "", string roleFilter = "all", string statusFilter = "all")
     // {
+    //     // Truy vấn cơ bản, lấy tất cả User và include Posts để đếm
+    //     var query = _context.Users.Include(u => u.Posts).AsQueryable();
+
+    //     // TODO: Thêm logic lọc dựa trên searchTerm, roleFilter, statusFilter (sẽ phức tạp hơn)
+    //     // Ví dụ đơn giản cho searchTerm:
+    //     if (!string.IsNullOrEmpty(searchTerm))
+    //     {
+    //         query = query.Where(u => u.FullName.Contains(searchTerm) || u.Email.Contains(searchTerm) || u.Username.Contains(searchTerm));
+    //     }
+
+    //     // Ví dụ đơn giản cho roleFilter (giả sử Role là string):
+    //     if (!string.IsNullOrEmpty(roleFilter) && roleFilter != "all")
+    //     {
+    //         query = query.Where(u => u.Role == roleFilter);
+    //     }
+
+    //     // Ví dụ đơn giản cho statusFilter (giả sử bạn có thuộc tính UserStatus):
+    //     // Bạn cần thêm thuộc tính UserStatus vào model User
+    //     // public string UserStatus { get; set; } // Ví dụ: "Active", "Inactive", "Banned"
+    //     if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "all")
+    //     {
+    //         // query = query.Where(u => u.UserStatus == statusFilter); // Bỏ comment khi có UserStatus
+    //     }
+
+    //     var totalUsers = await query.CountAsync();
+    //     // Tính toán totalPages - RẤT QUAN TRỌNG
+    //     var totalPages = (totalUsers > 0 && pageSize > 0) ? (int)Math.Ceiling((double)totalUsers / pageSize) : 1;
+    //     // Đảm bảo pageNumber không vượt quá totalPages
+    //     if (pageNumber > totalPages)
+    //     {
+    //         pageNumber = totalPages;
+    //     }
+    //     if (pageNumber < 1)
+    //     {
+    //         pageNumber = 1;
+    //     }
+    //     var users = await query
+    //                         .OrderByDescending(u => u.CreatedAt) // Sắp xếp theo người dùng mới nhất
+    //                         .Skip((pageNumber - 1) * pageSize)
+    //                         .Take(pageSize)
+    //                         .ToListAsync();
+
+    //     ViewBag.Users = users;
+    //     ViewBag.TotalUsers = totalUsers;
+    //     ViewBag.PageNumber = pageNumber;
+    //     ViewBag.PageSize = pageSize;
+    //     // ViewBag.TotalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+    //     ViewBag.TotalPages = totalPages; // Đảm bảo giá trị này đúng
+    //     // Truyền các giá trị filter hiện tại lại cho view để giữ trạng thái trên select box
+    //     ViewBag.SearchTerm = searchTerm;
+    //     ViewBag.RoleFilter = roleFilter;
+    //     ViewBag.StatusFilter = statusFilter;
+
     //     return View();
     // }
+    // Action để hiển thị trang quản lý người dùng
+public async Task<IActionResult> Users(int pageNumber = 1, int pageSize = 10, string searchTerm = "", string roleFilter = "all", string statusFilter = "all")
+{
+    // Truy vấn cơ bản, lấy tất cả User và include Posts để đếm
+    var query = _context.Users.Include(u => u.Posts).AsQueryable();
+
+    // 1. Lọc theo từ khóa tìm kiếm
+    if (!string.IsNullOrEmpty(searchTerm))
+    {
+        var lowerCaseSearchTerm = searchTerm.ToLower().Trim();
+        query = query.Where(u => u.FullName.ToLower().Contains(lowerCaseSearchTerm) || 
+                                 u.Email.ToLower().Contains(lowerCaseSearchTerm) || 
+                                 u.Username.ToLower().Contains(lowerCaseSearchTerm));
+    }
+
+    // 2. Lọc theo vai trò
+    if (!string.IsNullOrEmpty(roleFilter) && roleFilter.ToLower() != "all")
+    {
+        query = query.Where(u => u.Role.ToLower() == roleFilter.ToLower());
+    }
+
+    // 3. Lọc theo trạng thái <-- SỬA LỖI TẠI ĐÂY
+    if (!string.IsNullOrEmpty(statusFilter) && statusFilter.ToLower() != "all")
+    {
+        // Bỏ comment và thêm so sánh không phân biệt chữ hoa/thường
+        // Điều này đảm bảo "Bị cấm" sẽ khớp với "bị cấm" trong database và ngược lại.
+        query = query.Where(u => u.UserStatus.ToLower() == statusFilter.ToLower());
+    }
+
+    // Đếm tổng số lượng sau khi đã lọc
+    var totalUsers = await query.CountAsync();
+
+    // Tính toán số trang
+    var totalPages = (totalUsers > 0 && pageSize > 0) ? (int)Math.Ceiling((double)totalUsers / pageSize) : 1;
+    
+    // Đảm bảo số trang hợp lệ
+    if (pageNumber > totalPages) pageNumber = totalPages;
+    if (pageNumber < 1) pageNumber = 1;
+
+    // Lấy dữ liệu cho trang hiện tại
+    var users = await query
+                        .OrderByDescending(u => u.CreatedAt) // Sắp xếp theo người dùng mới nhất
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+
+    // Gửi dữ liệu và các tham số phân trang/lọc về View
+    ViewBag.Users = users;
+    ViewBag.TotalUsers = totalUsers;
+    ViewBag.PageNumber = pageNumber;
+    ViewBag.PageSize = pageSize;
+    ViewBag.TotalPages = totalPages;
+    ViewBag.SearchTerm = searchTerm;
+    ViewBag.RoleFilter = roleFilter;
+    ViewBag.StatusFilter = statusFilter;
+
+    return View();
+}
     // GET: /Admin/Settings
     public async Task<IActionResult> Settings()
     {

@@ -1,7 +1,6 @@
 @using TourismWeb.Models
 @using System.Web;
 
-@* Thêm dòng này nếu bạn muốn sử dụng danh sách người dùng một cách tường minh *@
 @{
     var users = ViewBag.Users as List<User> ?? new List<User>();
     var totalUsers = (int)(ViewBag.TotalUsers ?? 0);
@@ -15,13 +14,6 @@
     var currentStatusFilter = ViewBag.StatusFilter as string ?? "all";
 }
 
-<!-- DEBUGGING OUTPUT - XÓA SAU KHI DEBUG XONG -->
-@* <div style="background: yellow; padding: 10px; border: 1px solid red; margin-bottom: 10px;">
-    DEBUG: PageNumber: @pageNumber, PageSize: @pageSize, TotalUsers: @totalUsers, TotalPages: @totalPages<br/>
-    Search: '@currentSearchTerm', Role: '@currentRoleFilter', Status: '@currentStatusFilter'
-</div> *@
-<!-- END DEBUGGING OUTPUT -->
-
 @section Styles {
     <link rel="stylesheet" href="~/cssadmin/users.css">
     <link rel="stylesheet" href="~/cssadmin/styles.css" asp-append-version="true" />
@@ -33,152 +25,16 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-@* @section Scripts {
-    <script src="~/js/jsadmin/users.js"></script>
-    <script>
-        // JavaScript để xử lý filter và pagination (ví dụ đơn giản)
-        document.addEventListener('DOMContentLoaded', function () {
-            const filterButton = document.querySelector('.btn-filter');
-            const searchInput = document.querySelector('.search-input input');
-            const roleSelect = document.querySelectorAll('.select-control')[0]; // Vai trò
-            const statusSelect = document.querySelectorAll('.select-control')[1]; // Trạng thái
-            const pageSizeSelect = document.querySelector('.pagination-info .select-sm');
-
-
-            // Thiết lập giá trị ban đầu cho các filter controls
-            if (searchInput) searchInput.value = "@currentSearchTerm";
-            if (roleSelect) roleSelect.value = "@currentRoleFilter";
-            if (statusSelect) statusSelect.value = "@currentStatusFilter";
-            if (pageSizeSelect) pageSizeSelect.value = "@pageSize";
-
-
-            if (filterButton) {
-                filterButton.addEventListener('click', function () {
-                    const searchTerm = searchInput ? searchInput.value : '';
-                    const role = roleSelect ? roleSelect.value : 'all';
-                    const status = statusSelect ? statusSelect.value : 'all';
-                    const currentPgSize = pageSizeSelect ? pageSizeSelect.value : '10';
-                    window.location.href = `@Url.Action("Users", "Admin")?searchTerm=${encodeURIComponent(searchTerm)}&roleFilter=${role}&statusFilter=${status}&pageSize=${currentPgSize}&pageNumber=1`;
-                });
-            }
-
-            if (pageSizeSelect) {
-                pageSizeSelect.addEventListener('change', function() {
-                    const searchTerm = searchInput ? searchInput.value : '';
-                    const role = roleSelect ? roleSelect.value : 'all';
-                    const status = statusSelect ? statusSelect.value : 'all';
-                    const newPageSize = this.value;
-                    window.location.href = `@Url.Action("Users", "Admin")?searchTerm=${encodeURIComponent(searchTerm)}&roleFilter=${role}&statusFilter=${status}&pageSize=${newPageSize}&pageNumber=1`;
-                });
-            }
-
-            // Pagination buttons
-            const prevButton = document.querySelector('.pagination button:first-child');
-            const nextButton = document.querySelector('.pagination button:last-child');
-
-            if (prevButton && @pageNumber > 1) {
-                prevButton.disabled = false;
-                prevButton.addEventListener('click', function() {
-                    window.location.href = `@Url.Action("Users", "Admin")?searchTerm=${encodeURIComponent(currentSearchTerm)}&roleFilter=@currentRoleFilter&statusFilter=@currentStatusFilter&pageSize=@pageSize&pageNumber=${@pageNumber - 1}`;
-                });
-            } else if (prevButton) {
-                prevButton.disabled = true;
-            }
-
-
-            if (nextButton && @pageNumber < @totalPages) {
-                nextButton.disabled = false;
-                nextButton.addEventListener('click', function() {
-                     window.location.href = `@Url.Action("Users", "Admin")?searchTerm=${encodeURIComponent(currentSearchTerm)}&roleFilter=@currentRoleFilter&statusFilter=@currentStatusFilter&pageSize=@pageSize&pageNumber=${@pageNumber + 1}`;
-                });
-            } else if (nextButton) {
-                nextButton.disabled = true;
-            }
-
-            // Thêm các event listener cho nút "Thêm người dùng", "Sửa", "Xóa" để mở modal
-            // và xử lý logic JS cho các modal (ngoài phạm vi làm động bảng này)
-             const addUserButton = document.querySelector('.page-actions .btn-primary');
-             const userModal = document.getElementById('userModal');
-             const closeModalButtons = document.querySelectorAll('.modal-close, #cancelUser');
-
-             if (addUserButton && userModal) {
-                 addUserButton.addEventListener('click', () => {
-                     // Reset form (nếu cần)
-                     document.getElementById('userForm').reset();
-                     document.querySelector('#userModal .modal-title').textContent = 'Thêm người dùng mới';
-                     // Xóa ID ẩn nếu có (cho trường hợp edit)
-                     // document.getElementById('userIdHiddenInput').value = '';
-                     userModal.style.display = 'block';
-                 });
-             }
-
-             closeModalButtons.forEach(btn => {
-                 btn.addEventListener('click', () => {
-                     if (userModal) userModal.style.display = 'none';
-                     const deleteModal = document.getElementById('deleteModal');
-                     if (deleteModal) deleteModal.style.display = 'none';
-                 });
-             });
-
-            // Đóng modal khi click bên ngoài
-             window.addEventListener('click', (event) => {
-                 if (event.target === userModal) {
-                     userModal.style.display = 'none';
-                 }
-                 const deleteModal = document.getElementById('deleteModal');
-                 if (event.target === deleteModal) {
-                     deleteModal.style.display = 'none';
-                 }
-             });
-
-
-            // Example for delete button (you'll need to loop through all delete buttons)
-            // This is just a conceptual snippet, needs integration with your actual delete logic
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const userId = this.dataset.userId; // Cần thêm data-user-id vào nút xóa
-                    const userName = this.dataset.userName; // Cần thêm data-user-name
-                    const deleteModal = document.getElementById('deleteModal');
-                    const deleteUserNameSpan = document.getElementById('deleteUserName');
-                    const confirmDeleteButton = document.getElementById('confirmDelete');
-
-                    if (deleteUserNameSpan) deleteUserNameSpan.textContent = userName;
-                    // Lưu trữ userId để sử dụng khi xác nhận xóa
-                    if (confirmDeleteButton) confirmDeleteButton.dataset.userIdToDelete = userId;
-
-                    if (deleteModal) deleteModal.style.display = 'block';
-                });
-            });
-
-             // Logic cho nút sửa (tương tự, cần data-user-id và lấy thông tin user để fill form)
-             document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const userId = this.dataset.userId;
-                    // TODO: Gọi AJAX để lấy chi tiết người dùng theo userId
-                    // Hoặc nếu dữ liệu đã có sẵn một phần, bạn có thể truyền nó qua data attributes
-                    // Sau đó, điền thông tin vào form trong userModal và hiển thị modal
-                    alert('Chức năng sửa cho User ID: ' + userId + ' chưa được triển khai đầy đủ.');
-                    // Ví dụ:
-                    // document.getElementById('fullname').value = userData.fullName;
-                    // ... (điền các trường khác)
-                    // document.querySelector('#userModal .modal-title').textContent = 'Chỉnh sửa người dùng';
-                    // userModal.style.display = 'block';
-                });
-            });
-
-
-        });
-    </script>
-} *@
 @section Scripts {
     <script src="~/js/jsadmin/users.js"></script>
-    @* <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -- Bỏ comment nếu cần *@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const filterButton = document.querySelector('.btn-filter');
             const searchInput = document.querySelector('.search-input input');
-            const roleSelect = document.querySelectorAll('.select-control')[0]; // Vai trò
-            const statusSelect = document.querySelectorAll('.select-control')[1]; // Trạng thái
+            @* const roleSelect = document.querySelectorAll('.select-control')[0]; // Vai trò
+            const statusSelect = document.querySelectorAll('.select-control')[1]; // Trạng thái *@
+            const roleSelect = document.getElementById('roleFilter');
+const statusSelect = document.getElementById('statusFilter');
             const pageSizeSelect = document.querySelector('.pagination-info .select-sm');
 
             // Thiết lập giá trị ban đầu cho các filter controls
@@ -187,7 +43,7 @@
             if (statusSelect) statusSelect.value = "@currentStatusFilter";
             if (pageSizeSelect) pageSizeSelect.value = "@pageSize";
 
-            if (filterButton) {
+            @* if (filterButton) {
                 filterButton.addEventListener('click', function () {
                     const searchTerm = searchInput ? searchInput.value : '';
                     const role = roleSelect ? roleSelect.value : 'all';
@@ -195,7 +51,23 @@
                     const currentPgSize = pageSizeSelect ? pageSizeSelect.value : '10';
                     window.location.href = `@Url.Action("Users", "Admin")?searchTerm=${encodeURIComponent(searchTerm)}&roleFilter=${role}&statusFilter=${status}&pageSize=${currentPgSize}&pageNumber=1`;
                 });
-            }
+            } *@
+
+            if (filterButton) {
+    filterButton.addEventListener('click', function () {
+        const searchTerm = searchInput ? searchInput.value.trim() : '';
+        
+        // SỬA LẠI LOGIC LẤY GIÁ TRỊ TẠI ĐÂY
+        // Nếu select box tồn tại và có giá trị (không rỗng) thì lấy giá trị đó, nếu không thì mặc định là 'all'
+        const role = (roleSelect && roleSelect.value) ? roleSelect.value : 'all';
+        const status = (statusSelect && statusSelect.value) ? statusSelect.value : 'all';
+        
+        const currentPgSize = pageSizeSelect ? pageSizeSelect.value : '10';
+        
+        const url = `@Url.Action("Users", "Admin")?searchTerm=${encodeURIComponent(searchTerm)}&roleFilter=${role}&statusFilter=${status}&pageSize=${currentPgSize}&pageNumber=1`;
+        window.location.href = url;
+    });
+}
 
             if (pageSizeSelect) {
                 pageSizeSelect.addEventListener('change', function() {
@@ -338,11 +210,10 @@
                             <input type="text" placeholder="Tìm kiếm người dùng..." value="@currentSearchTerm">
                         </div>
                     </div>
-                    <div class="filter-item">
+                    @* <div class="filter-item">
                         <select class="select-control">
                             <option value="all" selected="@(currentRoleFilter == "all")">Tất cả vai trò</option>
                             <option value="Admin" selected="@(currentRoleFilter == "Admin")">Quản trị viên</option>
-                            @* Thêm các vai trò khác từ hệ thống của bạn nếu cần *@
                             <option value="User" selected="@(currentRoleFilter == "User")">Người dùng</option>
                         </select>
                     </div>
@@ -353,7 +224,97 @@
                             <option value="Không hoạt động" selected="@(currentStatusFilter == "Không hoạt động")">Không hoạt động</option>
                             <option value="Bị cấm" selected="@(currentStatusFilter == "Bị cấm")">Bị cấm</option>
                         </select>
-                    </div>
+                    </div> *@
+                    <!-- Trong phần .filter-card -->
+@* <div class="filter-item">
+    <select class="select-control" id="roleFilter">
+        <option value="all" selected="@(currentRoleFilter == "all")">Tất cả vai trò</option>
+        <option value="Admin" selected="@(currentRoleFilter == "Admin")">Quản trị viên</option>
+        <option value="User" selected="@(currentRoleFilter == "User")">Người dùng</option>
+    </select>
+</div>
+<div class="filter-item">
+    <select class="select-control" id="statusFilter">
+        <option value="all" selected="@(currentStatusFilter == "all")">Tất cả trạng thái</option>
+        <option value="Hoạt động" selected="@(currentStatusFilter == "Hoạt động")">Hoạt động</option>
+        <option value="Không hoạt động" selected="@(currentStatusFilter == "Không hoạt động")">Không hoạt động</option>
+        <option value="Bị cấm" selected="@(currentStatusFilter == "Bị cấm")">Bị cấm</option>
+    </select>
+</div> *@
+
+<!-- Sửa lại phần select cho Role Filter -->
+<div class="filter-item">
+    <select class="select-control" id="roleFilter">
+        @if (currentRoleFilter == "all")
+        {
+            <option value="all" selected>Tất cả vai trò</option>
+        }
+        else
+        {
+            <option value="all">Tất cả vai trò</option>
+        }
+        
+        @if (currentRoleFilter == "Admin")
+        {
+            <option value="Admin" selected>Quản trị viên</option>
+        }
+        else
+        {
+            <option value="Admin">Quản trị viên</option>
+        }
+        
+        @if (currentRoleFilter == "User")
+        {
+            <option value="User" selected>Người dùng</option>
+        }
+        else
+        {
+            <option value="User">Người dùng</option>
+        }
+    </select>
+</div>
+
+<!-- Sửa lại phần select cho Status Filter -->
+<div class="filter-item">
+    <select class="select-control" id="statusFilter">
+        @if (currentStatusFilter == "all")
+        {
+            <option value="all" selected>Tất cả trạng thái</option>
+        }
+        else
+        {
+            <option value="all">Tất cả trạng thái</option>
+        }
+        
+        @if (currentStatusFilter == "Hoạt động")
+        {
+            <option value="Hoạt động" selected>Hoạt động</option>
+        }
+        else
+        {
+            <option value="Hoạt động">Hoạt động</option>
+        }
+        
+        @if (currentStatusFilter == "Không hoạt động")
+        {
+            <option value="Không hoạt động" selected>Không hoạt động</option>
+        }
+        else
+        {
+            <option value="Không hoạt động">Không hoạt động</option>
+        }
+        
+        @if (currentStatusFilter == "Bị cấm")
+        {
+            <option value="Bị cấm" selected>Bị cấm</option>
+        }
+        else
+        {
+            <option value="Bị cấm">Bị cấm</option>
+        }
+    </select>
+</div>
+
                     <div class="filter-item">
                         <button class="btn btn-filter">
                             <i class="fas fa-filter"></i>
@@ -470,15 +431,6 @@
                             trên tổng số @totalUsers người dùng
                         </span>
                     </div>
-                    @* <div class="pagination">
-                        <button class="pagination-btn" disabled="@(pageNumber <= 1)">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <span class="pagination-text">Trang @pageNumber / @totalPages</span>
-                        <button class="pagination-btn" disabled="@(pageNumber >= totalPages)">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div> *@
                     <div class="pagination">
                         <button id="prevPageBtn" class="pagination-btn" disabled="@(pageNumber <= 1)">
                             <i class="fas fa-chevron-left"></i>
