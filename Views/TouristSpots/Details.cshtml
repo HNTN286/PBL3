@@ -33,7 +33,7 @@
             <div class="spot-meta">
                 <span class="category"><i class="fas fa-tag"></i> @Model.Category.Name</span>
                 <span class="rating">
-                    @for (int i = 0; i < 5; i++)
+                    @* @for (int i = 0; i < 5; i++)
                     {
                         if (i < ViewBag.AverageRating)
                         {
@@ -48,7 +48,29 @@
                             <i class="far fa-star"></i> <!-- Sao rỗng -->
                         }
                     }
-                    <span>@ViewBag.AverageRating/5</span> (@(Model.Reviews?.Count ?? 0) đánh giá)
+                    <span>@ViewBag.AverageRating/5</span> (@(Model.Reviews?.Count ?? 0) đánh giá) *@
+                    @{
+    double avg = ViewBag.AverageRating ?? 0.0;
+    for (int i = 1; i <= 5; i++)
+    {
+        if (avg >= i)
+        {
+            <i class="fas fa-star"></i> // full star
+        }
+        else if (avg >= i - 0.5)
+        {
+            <i class="fas fa-star-half-alt"></i> // half star
+        }
+        else
+        {
+            <i class="far fa-star"></i> // empty star
+        }
+    }
+}
+
+                    <span>
+    @Math.Round((double)ViewBag.AverageRating, 1)/5 (@(ViewBag.TotalReviews ?? 0) đánh giá)
+</span>
                 </span>
 
             </div>
@@ -305,7 +327,7 @@ else
             <h2>Đánh giá (@(ViewBag.TotalReviews ?? 0))</h2>
             <div class="rating-summary">
                 <div class="average-rating">
-                    <span class="big-rating">@ViewBag.AverageRating</span>
+                    @* <span class="big-rating">@ViewBag.AverageRating</span>
                     <div class="stars">
                         @for (int i = 0; i < 5; i++)
                         {
@@ -323,11 +345,24 @@ else
                             }
                         }
                     </div>
-                    <span>@ViewBag.AverageRating/5</span> (@(ViewBag.TotalReviews ?? 0) đánh giá)
+                    <span>@ViewBag.AverageRating/5</span> (@(ViewBag.TotalReviews ?? 0) đánh giá) *@
+                    <span class="big-rating">@((ViewBag.AverageRating as double?)?.ToString("0.0") ?? "0")</span>
+@{
+    double avgStar = ViewBag.AverageRating ?? 0.0;
+    int fullStars = (int)Math.Floor(avgStar);
+    bool hasHalfStar = (avgStar - fullStars) >= 0.25 && (avgStar - fullStars) < 0.75;
+    int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+}
+<div class="stars">
+    @for (int i = 0; i < fullStars; i++) { <i class="fas fa-star"></i> }
+    @if (hasHalfStar) { <i class="fas fa-star-half-alt"></i> }
+    @for (int i = 0; i < emptyStars; i++) { <i class="far fa-star"></i> }
+</div>
+                   <span>@Math.Round((double)ViewBag.AverageRating, 1)/5</span> (@(ViewBag.TotalReviews ?? 0) đánh giá)
                 </div>
 
                 <div class="rating-bars">
-                    @for (int i = 0; i < 5; i++)
+                    @* @for (int i = 0; i < 5; i++)
                     {
                         <div class="rating-bar">
                             <span>@(5 - i) sao</span>
@@ -336,15 +371,39 @@ else
                             </div>
                             <span>@(ViewBag.RatingCounts[i] ?? 0)</span>
                         </div>
-                    }
+                    } *@
+                    @for (int i = 4; i >= 0; i--)
+{
+    <div class="rating-bar">
+        <span>@(i + 1) sao</span>
+        <div class="bar-container">
+            <div class="bar" style="width: @(ViewBag.RatingPercentages[i] ?? 0)%"></div>
+        </div>
+        <span>@(ViewBag.RatingCounts[i] ?? 0)</span>
+    </div>
+}
                 </div>
             </div>
         </div>
 
 
         <div class="review-actions-bar">
-            <button class="btn primary" id="writeReviewBtn"><i class="fas fa-pen"></i> Viết đánh giá</button>
-            
+            @* <button class="btn primary" id="writeReviewBtn"><i class="fas fa-pen"></i> Viết đánh giá</button> *@
+            @if (User.Identity.IsAuthenticated)
+{
+    <button class="btn primary" id="writeReviewBtn"><i class="fas fa-pen"></i> Viết đánh giá</button>
+}
+else
+{
+   <p>
+    Bạn cần 
+    <a href="@Url.Action("Login", "Accounts", new { ReturnUrl = Context.Request.Path })">
+        đăng nhập
+    </a> 
+    để viết đánh giá.
+</p>
+
+}
 
 
             <div class="review-filters">
@@ -367,6 +426,8 @@ else
         </div>
     
     <!-- Form đánh giá, mặc định ẩn -->
+    @if (User.Identity.IsAuthenticated)
+{
             <div id="reviewForm" style="display:none;">
                 <h3>Viết đánh giá cho địa điểm</h3>
 
@@ -399,7 +460,7 @@ else
                     <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
                 </form>
             </div>
-
+}
 
         <div class="reviews-list">
             @if (Model.Reviews != null && Model.Reviews.Any())
@@ -442,8 +503,18 @@ else
                                 </div>
                             }
                             <div class="review-actions">
-                                <button class="like-btn"><i class="far fa-thumbs-up"></i> Hữu ích </button> 
-                                <button class="reply-btn"><i class="far fa-comment"></i> Phản hồi</button>
+                                @* <button class="like-btn"><i class="far fa-thumbs-up"></i> Hữu ích </button> 
+                                <button class="reply-btn"><i class="far fa-comment"></i> Phản hồi</button> *@
+                                 @* <button class="like-btn"><i class="far fa-thumbs-up"></i> Hữu ích</button>
+    <button class="reply-btn"><i class="far fa-comment"></i> Phản hồi</button> *@
+    <a asp-controller="Report" asp-action="Create" 
+        asp-route-targetType="Review"
+        asp-route-targetId="@review.ReviewId"
+        asp-route-reportedUserId="@review.User.UserId"
+        class="btn btn-outline-danger btn-sm ms-2"
+        title="Báo cáo vi phạm">
+        <i class="fas fa-flag"></i> Báo cáo
+    </a>
                             </div>
                         </div>
                     </div>
@@ -762,3 +833,20 @@ else
 ">
     🔗 Đã sao chép liên kết!
 </div>
+<style>
+    .bar-container {
+        width: 120px;
+        background: #eee;
+        border-radius: 6px;
+        margin: 0 8px;
+        display: inline-block;
+        height: 8px;
+        vertical-align: middle;
+    }
+    .bar {
+        background: #ffc107;
+        height: 8px;
+        border-radius: 6px;
+        transition: width 0.3s;
+    }
+</style>

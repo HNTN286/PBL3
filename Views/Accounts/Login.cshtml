@@ -609,6 +609,7 @@
     <input type="hidden" name="Email" id="fbEmail" />
     <input type="hidden" name="FullName" id="fbFullName" />
     <input type="hidden" name="AccessToken" id="fbAccessToken" />
+    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
     @Html.AntiForgeryToken()
 </form>
 

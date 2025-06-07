@@ -32,9 +32,13 @@
                 <h1 class="page-title">Khám phá địa điểm du lịch</h1>
                 <p class="page-subtitle">Tìm kiếm những điểm đến tuyệt vời cho chuyến đi tiếp theo của bạn</p>
             </div>
-            @* <a asp-action="Create" class="create-button">
-                <i class="fas fa-plus-circle"></i> Thêm địa điểm mới
-            </a> *@
+            @* Chỉ Admin mới thấy nút "Tạo Mới" *@
+            @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <p>
+                    <a asp-action="Create" class="btn btn-primary">Thêm địa điểm mới</a>
+                </p>
+            }
         </div>
 
         <!-- Search bar -->
@@ -101,6 +105,20 @@
                             <a asp-action="Index" asp-route-categoryId="@item.CategoryId"
                                 class="tag">@item.Category.Name</a>
                         </div>
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <div class="location-actions">
+                                <a asp-action="Details" asp-route-id="@item.SpotId" class="action-link details">
+                                    <i class="fas fa-info-circle"></i> Chi tiết
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.SpotId" class="action-link edit">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.SpotId" class="action-link delete">
+                                    <i class="fas fa-trash-alt"></i> Xóa
+                                </a>
+                            </div>
+                        }
                     </div>
                 </div>
             }
@@ -331,7 +349,7 @@
                     if (currentUserId === 0) {
                         showToast('Vui lòng đăng nhập để yêu thích địa điểm này.', 'warning');
                         setTimeout(() => {
-                            window.location.href = '/Identity/Account/Login';
+                            window.location.href = '/Accounts/Login';
                         }, 2000);
                         return;
                     }
@@ -365,7 +383,7 @@
                             if (errorData && errorData.aniauth) {
                                 showToast(errorData.message || 'Vui lòng đăng nhập để thực hiện thao tác này.', 'warning');
                                 setTimeout(() => {
-                                    window.location.href = '/Identity/Account/Login';
+                                    window.location.href = '/Accounts/Login';
                                 }, 2000);
                             } else {
                                 showToast(errorData ? errorData.message : 'Có lỗi xảy ra, vui lòng thử lại.', 'error');
@@ -394,7 +412,7 @@
                             if (data.aniauth) {
                                 showToast(data.message || 'Vui lòng đăng nhập để thực hiện thao tác này.', 'warning');
                                 setTimeout(() => {
-                                    window.location.href = '/Identity/Account/Login';
+                                    window.location.href = '/Accounts/Login';
                                 }, 2000);
                             } else {
                                 showToast(data.message || 'Có lỗi xảy ra khi cập nhật yêu thích.', 'error');
