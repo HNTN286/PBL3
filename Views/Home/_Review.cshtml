@@ -56,7 +56,7 @@
     .review-section .review {
         padding: 20px;
         border-radius: 10px;
-        width: 30%; /* Điều chỉnh nếu cần, ví dụ: min-width: 300px; max-width: 340px; flex-basis: 30%; */
+        width: 100%; /* Điều chỉnh nếu cần, ví dụ: min-width: 300px; max-width: 340px; flex-basis: 30%; */
         box-sizing: border-box;
         text-align: center;
         color: white;
@@ -99,6 +99,24 @@
         background-attachment: fixed;
         padding: 50px 0;
     }
+
+.review-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.review-link:hover .review {
+    transform: scale(1.02);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+    .review-section .review p {
+    white-space: normal;
+    word-break: break-word;
+}
+
 </style>
 
 <div class="review-section">
@@ -110,7 +128,7 @@
             <div class="reviews">
                 @if (customerReviews.Any())
                 {
-                    @foreach (var reviewData in customerReviews) // Đổi tên biến để tránh nhầm lẫn với class Review
+                    @* @foreach (var reviewData in customerReviews) // Đổi tên biến để tránh nhầm lẫn với class Review
                     {
                         <div class="review">
                             <img src="@Url.Content(reviewData.AvatarImageUrl)" alt="Ảnh đại diện @reviewData.AuthorName" class="avatar">
@@ -132,7 +150,27 @@
                                 </span>
                             </p>
                         </div>
-                    }
+                    } *@
+                    @foreach (var reviewData in customerReviews)
+{
+    <a href="@Url.Action("Details", "TouristSpots", new { id = reviewData.SpotId })" class="review-link">
+        <div class="review">
+            <img src="@Url.Content(reviewData.AvatarImageUrl)" alt="Ảnh đại diện @reviewData.AuthorName" class="avatar">
+            <div class="stars">
+                @for (int i = 0; i < reviewData.Rating; i++) { <text>★</text> }
+                @for (int i = reviewData.Rating; i < 5; i++) { <text>☆</text> }
+            </div>
+            <p class="comment">@reviewData.Comment</p>
+            <p class="author">
+                <strong>@reviewData.AuthorName</strong> / @reviewData.TourName
+                <span class="review-date">
+                    @reviewData.ReviewDate.ToString("dd/MM/yyyy HH:mm")
+                </span>
+            </p>
+        </div>
+    </a>
+}
+
                 }
                 else
                 {

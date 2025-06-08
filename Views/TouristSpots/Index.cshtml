@@ -195,7 +195,7 @@
 
         <!-- Popular locations -->
         <div class="sidebar-section">
-            <h3 class="sidebar-title"><i class="fas fa-fire"></i> Địa điểm phổ biến</h3>
+            <h3 class="sidebar-title"><i class="fas fa-fire"></i> Địa điểm được yêu thích nhất</h3>
 
             @{
                 // Sử dụng dữ liệu từ ViewBag.PopularSpots thay vì xử lý trong View
@@ -249,9 +249,9 @@
                 }
             }
 
-            <a asp-action="Popular" class="view-more">
+            @* <a asp-action="Popular" class="view-more">
                 <i class="fas fa-angle-right"></i> Xem thêm
-            </a>
+            </a> *@
         </div>
 
         <!-- Recent posts -->
@@ -316,24 +316,11 @@
                 }
             }
 
-            <a asp-controller="Posts" asp-action="Index" class="view-more">
+            @* <a asp-controller="Posts" asp-action="Index" class="view-more">
                 <i class="fas fa-angle-right"></i> Xem thêm
-            </a>
+            </a> *@
         </div>
 
-        @* <!-- Newsletter -->
-        <div class="sidebar-section">
-            <h3 class="sidebar-title"><i class="far fa-envelope"></i> Đăng ký nhận tin</h3>
-            <div class="newsletter-container">
-                <p>Nhận thông tin về các địa điểm du lịch mới và ưu đãi hấp dẫn</p>
-                <form class="newsletter-form">
-                    <input type="email" placeholder="Email của bạn" class="newsletter-input" required>
-                    <button type="submit" class="newsletter-button">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </form>
-            </div>
-        </div> *@
     </div>
 </div>
 

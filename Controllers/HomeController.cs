@@ -37,6 +37,7 @@ public class HomeController : Controller
                                         Comment = r.Comment,
                                         AuthorName = r.User.FullName, // Lấy FullName từ User
                                         TourName = r.Spot.Name, // Lấy Name từ Spot
+                                        SpotId = r.Spot.SpotId, // Lấy SpotId để tạo link đến chi tiết địa điểm
                                         ReviewDate = r.CreatedAt 
                                     })
                                     .ToListAsync();
