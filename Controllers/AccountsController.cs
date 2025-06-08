@@ -629,41 +629,90 @@ return RedirectToAction("Index", "Home");
         }
 
 
-        private async Task SignInUser(User user, bool isPersistent)
-        {
-            Console.WriteLine($"SignInUser: Attempting to sign in user '{user.Username}'. IsPersistent: {isPersistent}. UserId: {user.UserId}");
-            try
-            {
-                user.LastLoginAt = DateTime.Now;
-                _context.Users.Update(user);
-                Console.WriteLine($"SignInUser: Attempting to save LastLoginAt for user '{user.Username}'.");
-                await _context.SaveChangesAsync();
-                Console.WriteLine($"SignInUser: Updated LastLoginAt for user '{user.Username}'.");
-            }
-            catch (DbUpdateException dbEx)
-            {
-                Console.WriteLine($"SignInUser DbUpdateException while saving LastLoginAt: {dbEx.ToString()}");
-                string innerErrorMessages = GetInnerExceptionMessages(dbEx);
-                Console.WriteLine("SignInUser Inner Exception Details for LastLoginAt: " + innerErrorMessages);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"SignInUser General Exception while updating LastLoginAt: {ex.ToString()}");
-            }
+        // private async Task SignInUser(User user, bool isPersistent)
+        // {
+        //     Console.WriteLine($"SignInUser: Attempting to sign in user '{user.Username}'. IsPersistent: {isPersistent}. UserId: {user.UserId}");
+        //     try
+        //     {
+        //         user.LastLoginAt = DateTime.Now;
+        //         _context.Users.Update(user);
+        //         Console.WriteLine($"SignInUser: Attempting to save LastLoginAt for user '{user.Username}'.");
+        //         await _context.SaveChangesAsync();
+        //         Console.WriteLine($"SignInUser: Updated LastLoginAt for user '{user.Username}'.");
+        //     }
+        //     catch (DbUpdateException dbEx)
+        //     {
+        //         Console.WriteLine($"SignInUser DbUpdateException while saving LastLoginAt: {dbEx.ToString()}");
+        //         string innerErrorMessages = GetInnerExceptionMessages(dbEx);
+        //         Console.WriteLine("SignInUser Inner Exception Details for LastLoginAt: " + innerErrorMessages);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Console.WriteLine($"SignInUser General Exception while updating LastLoginAt: {ex.ToString()}");
+        //     }
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
-            Console.WriteLine($"SignInUser: Created claims for user '{user.Username}'.");
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties { IsPersistent = isPersistent };
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-            Console.WriteLine($"SignInUser: User '{user.Username}' successfully signed in with cookie.");
-        }
+        //     var claims = new List<Claim>
+        //     {
+        //         new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        //         new Claim(ClaimTypes.Name, user.Username),
+        //         new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+        //         new Claim(ClaimTypes.Role, user.Role)
+        //     };
+        //     Console.WriteLine($"SignInUser: Created claims for user '{user.Username}'.");
+        //     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        //     var authProperties = new AuthenticationProperties { IsPersistent = isPersistent };
+        //     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+        //     Console.WriteLine($"SignInUser: User '{user.Username}' successfully signed in with cookie.");
+        // }
+        private async Task SignInUser(User user, bool isPersistent)
+{
+    Console.WriteLine($"SignInUser: Attempting to sign in user '{user.Username}'. IsPersistent: {isPersistent}. UserId: {user.UserId}");
+    try
+    {
+        user.LastLoginAt = DateTime.Now;
+        _context.Users.Update(user);
+        Console.WriteLine($"SignInUser: Attempting to save LastLoginAt for user '{user.Username}'.");
+        await _context.SaveChangesAsync();
+        Console.WriteLine($"SignInUser: Updated LastLoginAt for user '{user.Username}'.");
+    }
+    catch (DbUpdateException dbEx)
+    {
+        Console.WriteLine($"SignInUser DbUpdateException while saving LastLoginAt: {dbEx.ToString()}");
+        string innerErrorMessages = GetInnerExceptionMessages(dbEx);
+        Console.WriteLine("SignInUser Inner Exception Details for LastLoginAt: " + innerErrorMessages);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"SignInUser General Exception while updating LastLoginAt: {ex.ToString()}");
+    }
+
+    var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+        new Claim(ClaimTypes.Role, user.Role)
+    };
+    Console.WriteLine($"SignInUser: Created claims for user '{user.Username}'.");
+
+    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+    var authProperties = new AuthenticationProperties
+    {
+        IsPersistent = isPersistent,
+        ExpiresUtc = isPersistent
+            ? DateTimeOffset.UtcNow.AddDays(30)     // ✅ Lưu cookie 30 ngày nếu nhớ đăng nhập
+            : DateTimeOffset.UtcNow.AddMinutes(30)  // ⏱️ Mặc định 30 phút nếu không nhớ
+    };
+
+    await HttpContext.SignInAsync(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        new ClaimsPrincipal(claimsIdentity),
+        authProperties);
+
+    Console.WriteLine($"SignInUser: User '{user.Username}' successfully signed in with cookie.");
+}
+
 
         private string GetInnerExceptionMessages(Exception ex)
         {

@@ -935,12 +935,6 @@
                                                 @Html.Raw(comment.Content.Replace("\n", "<br />")) @* Hiển thị xuống dòng *@
                                             </div>
                                             <div class="comment-actions">
-                                                <a href="#" class="comment-action small me-2">
-                                                    <i class="bi bi-hand-thumbs-up"></i> Thích
-                                                </a>
-                                                <a href="#" class="comment-action small me-2">
-                                                    <i class="bi bi-reply"></i> Trả lời
-                                                </a>
                                                 @if (User.FindFirst(ClaimTypes.NameIdentifier)?.Value == comment.UserId.ToString() || User.IsInRole("Admin")) // Cho phép chủ comment hoặc Admin xóa
                                                 {
                                                     <a asp-controller="PostComments" asp-action="Delete"
