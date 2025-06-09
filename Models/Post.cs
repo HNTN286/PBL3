@@ -8,53 +8,50 @@ namespace TourismWeb.Models
 {
     public class Post
     {
-        // --- Thuộc tính hiện có ---
         [Key]
         public int PostId { get; set; }
 
         [Required]
         public int UserId { get; set; }
         [ValidateNever]
-        public User User { get; set; } // Đảm bảo model User có các thuộc tính như FullName, Bio?
+        public User User { get; set; } 
 
         [Required]
-        [Display(Name = "Địa điểm")] // "Spot" -> "Địa điểm" cho dễ hiểu hơn
+        [Display(Name = "Địa điểm")] 
         public int SpotId { get; set; }
         [ValidateNever]
-        public TouristSpot Spot { get; set; } // Đảm bảo TouristSpot có các thuộc tính cần thiết
+        public TouristSpot Spot { get; set; } 
 
         [Required]
         [MaxLength(50)]
-        // Xem xét dùng Enum để an toàn kiểu dữ liệu hơn?
-        // public PostType TypeOfPost { get; set; }
-        [RegularExpression("^(Địa điểm|Cẩm nang|Trải nghiệm|Bài viết)$", ErrorMessage = "Loại bài viết không hợp lệ.")] // Thêm "Bài viết" phòng trường hợp cần
-        public string TypeOfPost { get; set; } // Loại bài viết
+        [RegularExpression("^(Địa điểm|Cẩm nang|Trải nghiệm|Bài viết)$", ErrorMessage = "Loại bài viết không hợp lệ.")] 
+        public string TypeOfPost { get; set; } 
 
         [Required, MaxLength(100)]
-        public string Title { get; set; } // Tiêu đề
+        public string Title { get; set; } 
 
         [Required]
         [DataType(DataType.MultilineText)]
-        public string Content { get; set; } // Nội dung chính/Mô tả/Câu chuyện
+        public string Content { get; set; }
 
-        public string ImageUrl { get; set; } = "/images/default-postImage.png"; // Ảnh đại diện
-        public DateTime CreatedAt { get; set; } = DateTime.Now; // Ngày tạo
+        public string ImageUrl { get; set; } = "/images/default-postImage.png"; 
+        public DateTime CreatedAt { get; set; } = DateTime.Now; 
 
-        [Display(Name = "Trạng thái")] // "Status" -> "Trạng thái"
-        public PostStatus Status { get; set; } = PostStatus.Pending; // Trạng thái duyệt bài
+        [Display(Name = "Trạng thái")] 
+        public PostStatus Status { get; set; } = PostStatus.Pending; 
 
         // --- Thuộc tính MỚI cho Nội dung Động ---
 
         // == Cho Loại: "Địa điểm" ==
         [Display(Name = "Thời gian tham quan ước tính")]
-        public string? EstimatedVisitTime { get; set; } // ví dụ: "2-3 giờ", "Nửa ngày"
+        public string? EstimatedVisitTime { get; set; } 
 
         [Display(Name = "Thông tin giá vé")]
-        public string? TicketPriceInfo { get; set; }    // ví dụ: "Miễn phí", "Từ 50.000 VND", "Người lớn: 100k, Trẻ em: 50k"
+        public string? TicketPriceInfo { get; set; }   
 
         [Display(Name = "Điểm đánh giá (trên 5)")]
         [Range(0, 5)]
-        public double? LocationRating { get; set; }      // ví dụ: 4.5
+        public double? LocationRating { get; set; }     
 
         [Display(Name = "Lịch trình gợi ý")]
         public string? SuggestedItinerary { get; set; } // Có thể lưu HTML/Markdown đơn giản hoặc văn bản thuần
@@ -78,17 +75,17 @@ namespace TourismWeb.Models
 
         // == Cho Loại: "Trải nghiệm" ==
         [Display(Name = "Ngày kết thúc trải nghiệm")]
-        public DateTime? ExperienceEndDate { get; set; } // Để tính thời gian kéo dài
+        public DateTime? ExperienceEndDate { get; set; } 
 
         [Display(Name = "Người đồng hành")]
-        public string? Companions { get; set; }         // ví dụ: "Gia đình", "Bạn bè", "Một mình"
+        public string? Companions { get; set; }         
 
         [Display(Name = "Chi phí ước tính")]
-        public string? ApproximateCost { get; set; }    // ví dụ: "Khoảng 5 triệu VND/người"
+        public string? ApproximateCost { get; set; }   
 
         [Display(Name = "Đánh giá tổng quan (trên 10)")]
         [Range(0, 10)]
-        public double? OverallExperienceRating { get; set; } // ví dụ: 9.0
+        public double? OverallExperienceRating { get; set; } 
 
         // Đối với đánh giá chi tiết, sử dụng các trường riêng biệt sẽ rõ ràng hơn là phân tích một chuỗi
         [Display(Name = "Điểm cảnh quan (trên 5)")]
@@ -116,31 +113,16 @@ namespace TourismWeb.Models
         [Display(Name = "Lời khuyên")]
         public string? Advice { get; set; }
 
-        // --- Các Collection Hiện có ---
-        // Sử dụng chúng tích cực hơn!
-        public ICollection<PostImage> Images { get; set; } = new List<PostImage>(); // Cho các hình ảnh bổ sung
-        public ICollection<PostFavorite> PostFavorites { get; set; } = new List<PostFavorite>(); // Yêu thích
-        public ICollection<PostComment> Comments { get; set; } = new List<PostComment>(); // Bình luận
-        public ICollection<PostShare> Shares { get; set; } = new List<PostShare>(); // Lượt chia sẻ
-
-        // --- Có thể xem xét thêm ---
-        // public ICollection<RelatedPost> RelatedPosts { get; set; } // Cần logic để điền dữ liệu
+        public ICollection<PostImage> Images { get; set; } = new List<PostImage>(); 
+        public ICollection<PostFavorite> PostFavorites { get; set; } = new List<PostFavorite>(); 
+        public ICollection<PostComment> Comments { get; set; } = new List<PostComment>(); 
+        public ICollection<PostShare> Shares { get; set; } = new List<PostShare>(); 
     }
 
-    // Enum cho trạng thái bài viết
     public enum PostStatus
     {
-        Pending, // Chờ duyệt
-        Approved, // Đã duyệt
-        Rejected // Bị từ chối
+        Pending, 
+        Approved, 
+        Rejected 
     }
-
-    // Ví dụ Enum cho PostType (Tùy chọn nhưng được khuyến nghị)
-    // public enum PostType
-    // {
-    //     DiaDiem, // Hoặc Location
-    //     CamNang, // Hoặc Guidebook
-    //     TraiNghiem, // Hoặc Experience
-    //     BaiViet // Hoặc Article
-    // }
 }

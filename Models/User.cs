@@ -1,34 +1,34 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations; // Đảm bảo bạn có using này
+using System.ComponentModel.DataAnnotations; 
 
-namespace TourismWeb.Models // Hoặc namespace model của bạn
+namespace TourismWeb.Models 
 {
     public class User
     {
         [Key]
         public int UserId { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng nhập họ và tên.")] // Thêm ErrorMessage nếu muốn
+        [Required(ErrorMessage = "Vui lòng nhập họ và tên.")] 
         [StringLength(100)]
-        public string FullName { get; set; } = null!; // Khởi tạo để tránh warning CS8618 nếu không gán trong constructor
+        public string FullName { get; set; } = null!; 
 
         [DataType(DataType.Date)]
         [Display(Name = "Ngày sinh")]
         public DateTime? DateOfBirth { get; set; }
 
-        [Phone(ErrorMessage = "Số điện thoại không hợp lệ.")] // Thêm ErrorMessage
+        [Phone(ErrorMessage = "Số điện thoại không hợp lệ.")] 
         [Display(Name = "Số điện thoại")]
         public string? PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập địa chỉ email.")]
         [EmailAddress(ErrorMessage = "Địa chỉ email không hợp lệ.")]
-        public string Email { get; set; } = null!; // Khởi tạo
+        public string Email { get; set; } = null!;
 
         [Required(ErrorMessage = "Vui lòng nhập tên đăng nhập.")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Tên đăng nhập phải có từ 3 đến 50 ký tự.")]
         [Display(Name = "Tên đăng nhập")]
-        public string Username { get; set; } = null!; // Khởi tạo
+        public string Username { get; set; } = null!; 
 
         public string? FacebookId { get; set; }
         public string? GoogleId { get; set; }
@@ -36,7 +36,7 @@ namespace TourismWeb.Models // Hoặc namespace model của bạn
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu.")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự.")]
         [DataType(DataType.Password)]
-        public string Password { get; set; } = null!; // Khởi tạo (Sẽ được hash)
+        public string Password { get; set; } = null!; 
 
         [Display(Name = "Ảnh đại diện")]
         public string AvatarUrl { get; set; } = "/images/default-avatar.png";
@@ -55,14 +55,11 @@ namespace TourismWeb.Models // Hoặc namespace model của bạn
         [Display(Name = "Trạng thái người dùng")]
         public string UserStatus { get; set; } = "Hoạt động";
 
-        // === CÁC THUỘC TÍNH MỚI CHO QUÊN MẬT KHẨU ===
-        [StringLength(256)] // Độ dài tùy thuộc vào cách bạn tạo token
+        [StringLength(256)] 
         public string? PasswordResetToken { get; set; }
 
         public DateTime? PasswordResetTokenExpiry { get; set; }
-        // ===============================================
 
-        // Các ICollection của bạn (giữ nguyên)
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<Post> Posts { get; set; } = new List<Post>();
         public ICollection<PostComment> PostComments { get; set; } = new List<PostComment>();

@@ -1,42 +1,3 @@
-// using System;
-// using System.Collections.Generic;
-// using System.ComponentModel.DataAnnotations;
-// using System.ComponentModel.DataAnnotations.Schema;
-// using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-
-// namespace TourismWeb.Models
-// {
-//     public class TouristSpot
-//     {
-//         [Key]
-//         public int SpotId { get; set; }
-
-//         [Required, MaxLength(100)]
-//         public string Name { get; set; }
-
-//         [Required]
-//         public string Address { get; set; }
-//         [Required]
-//         [ForeignKey("Category")]
-//         [Display(Name = "Category")] 
-//         public int? CategoryId { get; set; }
-//         [ValidateNever]
-//         public Category Category { get; set; }
-
-//         public string Description { get; set; } 
-
-//         public string ImageUrl { get; set; } = "/images/default-spotImage.png" ;    
-//         public DateTime CreatedAt { get; set; } = DateTime.Now;
-//         public bool IsLikedByCurrentUser { get; set; } = false;
-
-//         public ICollection<Review> Reviews { get; set; } = new List<Review>();
-//         public ICollection<SpotFavorite> Favorites { get; set; } = new List<SpotFavorite>();
-//         public ICollection<SpotShare> Shares { get; set; } = new List<SpotShare>();
-//         public ICollection<SpotImage> Images { get; set; } = new List<SpotImage>();
-//         public ICollection<Post> Posts { get; set; } = new List<Post>();
-//         public ICollection<SpotTag> SpotTags { get; set; } = new List<SpotTag>();
-//     }
-// }
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -71,19 +32,17 @@ namespace TourismWeb.Models
         public string Description { get; set; }
 
         [Display(Name = "Ảnh đại diện")]
-        public string ImageUrl { get; set; } = "/images/default-spotImage.png"; // Giữ ảnh mặc định nếu cần
+        public string ImageUrl { get; set; } = "/images/default-spotImage.png"; 
 
         [Display(Name = "Ngày tạo")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // --- THÊM THUỘC TÍNH NGƯỜI TẠO ---
-        [Required] // Quan trọng: Một địa điểm phải có người tạo
-        public int CreatorUserId { get; set; } // Lưu ID của người dùng đã tạo
+        [Required] 
+        public int CreatorUserId { get; set; } 
 
         [ForeignKey("CreatorUserId")]
         [ValidateNever]
-        public virtual User CreatorUser { get; set; } // Navigation property đến User model
-        // --- KẾT THÚC THUỘC TÍNH NGƯỜI TẠO ---
+        public virtual User CreatorUser { get; set; } 
 
         // Thuộc tính này nên được xác định ở Controller dựa trên User hiện tại và Favorites
         [NotMapped] // Không lưu vào DB trực tiếp, mà tính toán khi cần
@@ -92,11 +51,10 @@ namespace TourismWeb.Models
 
         // --- CÁC TRƯỜNG MỚI ĐỂ LƯU DỮ LIỆU ĐỘNG ---
         [Display(Name = "Thời gian tham quan lý tưởng")]
-        public string IdealVisitTime { get; set; } // Ví dụ: "Tháng 3 - Tháng 5 và Tháng 9 - Tháng 11"
+        public string IdealVisitTime { get; set; } 
 
         [Display(Name = "Các dịch vụ có sẵn")]
-        public string AvailableServices { get; set; } // Ví dụ: "Khách sạn, Nhà hàng, Cho thuê xe, Tour hướng dẫn"
-                                                      // Có thể lưu dạng chuỗi phân cách bằng dấu phẩy, hoặc JSON nếu phức tạp hơn
+        public string AvailableServices { get; set; } 
 
         [Display(Name = "Mẹo du lịch")]
         [DataType(DataType.MultilineText)]
@@ -109,9 +67,7 @@ namespace TourismWeb.Models
         [Display(Name = "URL nhúng video")]
         [DataType(DataType.Url)]
         public string VideoEmbedUrl { get; set; } // Lưu URL src của iframe YouTube (hoặc chỉ ID video nếu bạn muốn xử lý linh hoạt hơn)
-        // --- KẾT THÚC CÁC TRƯỜNG MỚI ---
 
-        // Các Collection đã có
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<SpotFavorite> Favorites { get; set; } = new List<SpotFavorite>();
         public ICollection<SpotShare> Shares { get; set; } = new List<SpotShare>();

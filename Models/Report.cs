@@ -53,9 +53,9 @@ namespace TourismWeb.Models
         public int ReportId { get; set; }
 
         public int ReporterUserId { get; set; }
-        [ValidateNever] // ✅ Không kiểm tra từ form
+        [ValidateNever] 
         [ForeignKey("ReporterUserId")]
-        public virtual User ReporterUser { get; set; } // Người báo cáo
+        public virtual User ReporterUser { get; set; } 
 
         [Required]
         public ReportType? TypeOfReport { get; set; }
@@ -65,7 +65,7 @@ namespace TourismWeb.Models
         public int? TargetId { get; set; } // ID của Post, Comment, User, Spot...
 
         public int? ReportedUserId { get; set; } // ID của người dùng bị báo cáo/sở hữu nội dung
-        [ValidateNever] // ✅ Không kiểm tra từ form
+        [ValidateNever] 
         [ForeignKey("ReportedUserId")]
         public virtual User ReportedUser { get; set; }
 
@@ -78,13 +78,13 @@ namespace TourismWeb.Models
         public ReportStatus Status { get; set; } = ReportStatus.Pending;
 
         public int? AdminUserId { get; set; } // ID của admin xử lý (cần User ID của admin hiện tại)
-        [ValidateNever] // ✅ Không kiểm tra từ form
+        [ValidateNever] 
         [ForeignKey("AdminUserId")]
         public virtual User AdminUser { get; set; } // Người dùng Admin đã xử lý
 
         public DateTime? ResolvedAt { get; set; }
         [StringLength(500)]
-        [ValidateNever] // Ngăn ModelState kiểm tra khi không có trong form
+        [ValidateNever] 
         public string? AdminNotes { get; set; }
     }
 }
