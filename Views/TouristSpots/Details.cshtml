@@ -125,9 +125,9 @@
                     <img src="/images/default-spotImage.png" alt="Ảnh mặc định">
                 }
             </div>
-            <button class="gallery-btn" id="viewAllPhotosBtn">
+            @* <button class="gallery-btn" id="viewAllPhotosBtn">
                 <i class="fas fa-images"></i> Có tất cả (@(Model.Images?.Count ?? (string.IsNullOrEmpty(Model.ImageUrl) || Model.ImageUrl == "/images/default-spotImage.png" ? 0 : 1) )) ảnh
-            </button>
+            </button> *@
         </div>
     </section>
 
@@ -307,9 +307,17 @@
             </div>
 
             <div class="review-form-section mt-3">
-                <button class="btn btn-primary" id="toggleReviewFormBtn">
-                    <i class="fas fa-edit"></i> Viết đánh giá
-                </button>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <p class="text-muted">Bạn đã có thể viết đánh giá cho địa điểm này. Hãy chia sẻ trải nghiệm của bạn với mọi người!</p>
+                    <button class="btn btn-primary" id="toggleReviewFormBtn">
+                        <i class="fas fa-edit"></i> Viết đánh giá
+                    </button>
+                } 
+                else
+                {
+                    <p class="text-muted">Bạn cần đăng nhập để viết đánh giá. <a asp-controller="Accounts" asp-action="Login" class="text-primary">Đăng nhập</a> hoặc <a asp-controller="Accounts" asp-action="Register" class="text-primary">Đăng ký</a> tài khoản mới.</p>
+                }
                 <div id="newReviewFormContainer" style="display:none;">
                     <h3 class="form-title">Đánh giá của bạn</h3>
                     <form asp-action="Create" asp-controller="Reviews" method="post" enctype="multipart/form-data" id="actualReviewForm">
@@ -394,10 +402,6 @@
                                                 <img src="@review.ImageUrl" alt="Ảnh đánh giá" onclick="openLightbox(this.src, 'Ảnh đánh giá của @(review.User?.FullName)')" style="max-width:150px; max-height:150px; cursor:pointer; border-radius:4px;">
                                             </div>
                                         }
-                                        @* <div class="review-actions mt-2">
-                                           <button class="btn btn-sm btn-light like-btn"><i class="far fa-thumbs-up"></i> Hữu ích (<span class="like-count">0</span>)</button>
-                                           <button class="btn btn-sm btn-light reply-btn"><i class="far fa-comment"></i> Phản hồi</button>
-                                        </div> *@
                                     </div>
                                      <div class="review-item-side-actions ms-3">
                                         <a asp-controller="Report" asp-action="Create" asp-route-targetType="Review" asp-route-targetId="@review.ReviewId" asp-route-reportedUserId="@review.User?.UserId" class="report-review-btn-new" title="Báo cáo đánh giá này"><i class="fas fa-flag"></i></a>
