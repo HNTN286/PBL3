@@ -368,7 +368,7 @@
 
             @if (Model.Reviews != null && Model.Reviews.Any())
             {
-                <h3 class="recent-reviews-title mt-4">Đánh giá gần đây</h3>
+                @* <h3 class="recent-reviews-title mt-4">Đánh giá gần đây</h3>
                 <div class="reviews-list-recent">
                     @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt).Take(recentReviewsToShow))
                     {
@@ -410,7 +410,7 @@
                             </div>
                         </div>
                     }
-                </div>
+                </div> *@
 
                 <div class="reviews-list mt-3">
                     @{
@@ -445,16 +445,16 @@
                                                 </div>
                                             </div>
                                             <p class="review-text mt-2">@review.Comment</p>
-                                            @if (!string.IsNullOrEmpty(review.ImageUrl))
+                                            @if (!string.IsNullOrEmpty(review.ImageUrl) && review.ImageUrl != "/images/default-review.png")
                                             {
                                                 <div class="review-photos mt-2">
                                                     <img src="@review.ImageUrl" alt="Ảnh đánh giá" onclick="openLightbox(this.src, 'Ảnh đánh giá của @(review.User?.FullName)')" style="max-width:150px; max-height:150px; cursor:pointer; border-radius:4px;">
                                                 </div>
                                             }
-                                            <div class="review-actions mt-2">
+                                            @* <div class="review-actions mt-2">
                                                <button class="btn btn-sm btn-light like-btn"><i class="far fa-thumbs-up"></i> Hữu ích (<span class="like-count">0</span>)</button>
                                                <button class="btn btn-sm btn-light reply-btn"><i class="far fa-comment"></i> Phản hồi</button>
-                                            </div>
+                                            </div> *@
                                         </div>
                                         <div class="review-item-side-actions ms-3">
                                             <a asp-controller="Report" asp-action="Create" asp-route-targetType="Review" asp-route-targetId="@review.ReviewId" asp-route-reportedUserId="@review.User?.UserId" class="report-review-btn-new" title="Báo cáo đánh giá này"><i class="fas fa-flag"></i></a>
@@ -759,7 +759,7 @@
             }
             const avatarUrl = review.userAvatarUrl || '/images/default-avatar.png';
             const userName = review.userFullName || 'Người dùng ẩn danh';
-            const reviewImageUrl = review.imageUrl ? `<div class="review-photos mt-2"><img src="${review.imageUrl}" alt="Ảnh đánh giá" onclick="openLightbox(this.src, 'Ảnh đánh giá của ${userName}')" style="max-width:150px; max-height:150px; cursor:pointer; border-radius:4px;"></div>` : '';
+            const reviewImageUrl = (review.imageUrl && review.imageUrl != "/images/default-review.png") ? `<div class="review-photos mt-2"><img src="${review.imageUrl}" alt="Ảnh đánh giá" onclick="openLightbox(this.src, 'Ảnh đánh giá của ${userName}')" style="max-width:150px; max-height:150px; cursor:pointer; border-radius:4px;"></div>` : '';
             const reportLink = `/Report/Create?targetType=Review&targetId=${review.reviewId}&reportedUserId=${review.userId}`;
 
             return `
@@ -774,17 +774,16 @@
                                 </div>
                                 <p class="review-text mt-2">${review.comment}</p>
                                 ${reviewImageUrl}
-                                <div class="review-actions mt-2">
+                                @* <div class="review-actions mt-2">
                                    <button class="btn btn-sm btn-light like-btn" data-review-id="${review.reviewId}"><i class="far fa-thumbs-up"></i> Hữu ích (<span class="like-count">${review.likeCount || 0}</span>)</button>
                                    <button class="btn btn-sm btn-light reply-btn" data-review-id="${review.reviewId}"><i class="far fa-comment"></i> Phản hồi</button>
-                                </div>
+                                </div> *@
                             </div>
                             <div class="review-item-side-actions ms-3"><a href="${reportLink}" class="report-review-btn-new" title="Báo cáo đánh giá này"><i class="fas fa-flag"></i></a></div>
                         </div>
                     </div>
                 </div>`;
         }
-         // Initial check for load more button visibility based on server-rendered counts
         if (loadMoreReviewsBtn) {
             const initiallyRenderedInMainList = @reviewsForMainListInitial.Count();
             if (@totalReviewsCount <= (recentReviewsCountOnClient + initiallyRenderedInMainList)) {

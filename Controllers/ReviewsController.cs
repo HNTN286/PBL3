@@ -329,7 +329,7 @@ namespace TourismWeb.Controllers
             {
                 if (filterBy == "with-photos")
                 {
-                    query = query.Where(r => !string.IsNullOrEmpty(r.ImageUrl) && r.ImageUrl != "/images/default-postImage.png");
+                    query = query.Where(r => !string.IsNullOrEmpty(r.ImageUrl) && r.ImageUrl != "/images/default-review.png");
                 }
                 else if (int.TryParse(filterBy, out int ratingFilter))
                 {
