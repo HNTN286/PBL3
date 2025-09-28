@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-// Trong AdminController.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TourismWeb.Models; // Namespace chứa ApplicationDbContext và các Model
@@ -21,11 +20,6 @@ public class AdminController : Controller
     private readonly ILogger<AdminController> _logger; // Thêm logger vào đây nếu cần thiết
     private readonly IConfiguration _configuration;
     [ActivatorUtilitiesConstructor]
-    // public AdminController(ApplicationDbContext context, ILogger<AdminController> logger)
-    // {
-    //     _context = context;
-    //     _logger = logger; // Khởi tạo logger
-    // }
     public AdminController(ApplicationDbContext context, ILogger<AdminController> logger, IConfiguration configuration)
     {
         _context = context;
@@ -194,10 +188,6 @@ public class AdminController : Controller
     {
         return View();
     }
-    // public IActionResult Comments()
-    // {
-    //     return View();
-    // }
     public async Task<IActionResult> Comments()
 {
     var reviews = await _context.Reviews
@@ -248,18 +238,12 @@ public class AdminController : Controller
 
     return View(allCommentsAndReviews);
 }
-    // public IActionResult Interactions()
-    // {
-    //     return View();
-    // }
     public async Task<IActionResult> Interactions(string timeRange = "30", DateTime? fromDate = null, DateTime? toDate = null)
 {
-    // Convert timeRange to int for easier handling
-    int days = 30; // Initialize with default value
+    int days = 30; 
     bool isAllTime = false;
     bool isCustomRange = false;
     
-    // Kiểm tra xem có đang sử dụng bộ lọc tùy chỉnh không
     if (fromDate.HasValue && toDate.HasValue)
     {
         isCustomRange = true;
@@ -281,8 +265,6 @@ public class AdminController : Controller
                 days = 7;
                 break;
             case "-1":
-                // Thay đổi ở đây: Thay vì đặt ngày bắt đầu từ năm 2000,
-                // đặt ngày bắt đầu từ 12 tháng trước đến nay
                 days = 365; // Khoảng 1 năm
                 isAllTime = true;
                 break;
@@ -380,8 +362,6 @@ public class AdminController : Controller
     TimeSpan timeSpan = toDate.Value - fromDate.Value;
     int totalDays = (int)timeSpan.TotalDays;
 
-    
-    // Xác định khoảng thời gian cho biểu đồ
     if (totalDays <= 31) // Hiển thị theo ngày nếu dưới 31 ngày
     {
         // Lấy dữ liệu theo ngày
@@ -526,277 +506,6 @@ public class AdminController : Controller
     
     return View();
 }
-    //     // GET: Admin/Reports
-    //     public async Task<IActionResult> Reports(string statusFilter = "Pending", string typeFilter = "all", string targetTypeFilter = "all", int pageNumber = 1, int pageSize = 10, string searchTerm = "")
-    //     {
-    //         ViewData["Title"] = "Quản Lý Báo Cáo - Hệ Thống Quản Trị";
-    //         var query = _context.Reports
-    //                             .Include(r => r.ReporterUser)
-    //                             .Include(r => r.ReportedUser)
-    //                             .AsQueryable();
-
-    //         // Lọc theo trạng thái báo cáo
-    //         if (!string.IsNullOrEmpty(statusFilter) && statusFilter.ToLower() != "all")
-    //         {
-    //             if (Enum.TryParse<ReportStatus>(statusFilter, true, out var parsedStatus))
-    //             {
-    //                 query = query.Where(r => r.Status == parsedStatus);
-    //             }
-    //         }
-
-    //         // Lọc theo loại báo cáo
-    //         if (!string.IsNullOrEmpty(typeFilter) && typeFilter.ToLower() != "all")
-    //         {
-    //             if (Enum.TryParse<ReportType>(typeFilter, true, out var parsedType))
-    //             {
-    //                 query = query.Where(r => r.TypeOfReport == parsedType);
-    //             }
-    //         }
-
-    //         // Lọc theo đối tượng bị báo cáo
-    //         if (!string.IsNullOrEmpty(targetTypeFilter) && targetTypeFilter.ToLower() != "all")
-    //         {
-    //             if (Enum.TryParse<ReportTargetType>(targetTypeFilter, true, out var parsedTargetType))
-    //             {
-    //                 query = query.Where(r => r.TargetType == parsedTargetType);
-    //             }
-    //         }
-
-    //         // Tìm kiếm
-    //         if (!string.IsNullOrEmpty(searchTerm))
-    //         {
-    //             query = query.Where(r => r.Reason.Contains(searchTerm) ||
-    //                                      (r.ReporterUser != null && r.ReporterUser.FullName.Contains(searchTerm)) ||
-    //                                      (r.ReportedUser != null && r.ReportedUser.FullName.Contains(searchTerm)));
-    //         }
-
-
-    //         var totalReports = await query.CountAsync();
-    //         var reports = await query
-    //                                 .OrderByDescending(r => r.ReportedAt)
-    //                                 .Skip((pageNumber - 1) * pageSize)
-    //                                 .Take(pageSize)
-    //                                 .ToListAsync();
-
-    //         ViewBag.Reports = reports;
-    //         ViewBag.TotalReports = totalReports;
-    //         ViewBag.PageNumber = pageNumber;
-    //         ViewBag.PageSize = pageSize;
-    //         ViewBag.TotalPages = (int)Math.Ceiling(totalReports / (double)pageSize);
-    //         ViewBag.CurrentStatusFilter = statusFilter;
-    //         ViewBag.CurrentTypeFilter = typeFilter;
-    //         ViewBag.CurrentTargetTypeFilter = targetTypeFilter;
-    //         ViewBag.CurrentSearchTerm = searchTerm;
-
-    //         return View();
-    //     }
-
-    //     // GET: Admin/GetReportDetails/5
-    //     [HttpGet]
-    //     public async Task<IActionResult> GetReportDetails(int id)
-    //     {
-    //         var report = await _context.Reports
-    //                                    .Include(r => r.ReporterUser)
-    //                                    .Include(r => r.ReportedUser)
-    //                                    .FirstOrDefaultAsync(r => r.ReportId == id);
-
-    //         if (report == null) return NotFound();
-
-    //         object targetContent = null;
-    //         string targetLink = "#";
-
-    //         if (report.TargetType == ReportTargetType.Post && report.TargetId.HasValue)
-    //         {
-    //             var post = await _context.Posts.FindAsync(report.TargetId.Value);
-    //             if (post != null)
-    //             {
-    //                 targetContent = new { Type = "Post", Title = post.Title, Content = TruncateString(post.Content, 200) };
-    //                 targetLink = Url.Action("Details", "Posts", new { id = post.PostId }); // Điều chỉnh Controller/Action
-    //             }
-    //         }
-    //         else if (report.TargetType == ReportTargetType.Comment && report.TargetId.HasValue)
-    //         {
-    //             // var comment = await _context.PostComments.Include(c => c.Post).FirstOrDefaultAsync(c => c.CommentId == report.TargetId.Value);
-    //             var comment = await _context.PostComments
-    //                                         .Include(c => c.User) // Người tạo comment
-    //                                         .Include(c => c.Post) // Để lấy link post
-    //                                         .FirstOrDefaultAsync(c => c.CommentId == report.TargetId.Value);
-    //             if (comment != null)
-    //             {
-    //                 targetContent = new { Type = "Comment", Content = TruncateString(comment.Content, 200) };
-    //                 targetLink = Url.Action("Details", "Posts", new { id = comment.PostId }) + "#comment-" + comment.CommentId; // Điều chỉnh
-    //             }
-    //         }
-    //         else if (report.TargetType == ReportTargetType.User && report.ReportedUserId.HasValue)
-    //         {
-    //              // Không có content cụ thể, chỉ là thông tin user
-    //             targetContent = new { Type = "User" };
-    //             targetLink = Url.Action("Details", "Users", new { id = report.ReportedUserId.Value }); // Giả sử có trang chi tiết user
-    //         }
-
-
-    //         var reportViewModel = new
-    //         {
-    //             report.ReportId,
-    //             ReporterName = report.ReporterUser?.FullName,
-    //             ReporterEmail = report.ReporterUser?.Email,
-    //             ReporterAvatar = Url.Content(report.ReporterUser?.AvatarUrl ?? "~/images/default-avatar.png"),
-    //             TypeOfReport = report.TypeOfReport.ToString(),
-    //             TargetType = report.TargetType.ToString(),
-    //             TargetId = report.TargetId,
-    //             ReportedUserId = report.ReportedUserId,
-    //             ReportedUserName = report.ReportedUser?.FullName,
-    //             ReportedUserEmail = report.ReportedUser?.Email,
-    //             ReportedUserAvatar = Url.Content(report.ReportedUser?.AvatarUrl ?? "~/images/default-avatar.png"),
-    //             Reason = report.Reason,
-    //             ReportedAt = report.ReportedAt.ToString("dd/MM/yyyy HH:mm"),
-    //             Status = report.Status.ToString(), // Trạng thái hiện tại của báo cáo
-    //             // report.AdminNotes,
-    //             AdminNotes = report.AdminNotes,
-    //             TargetContent = targetContent,
-    //             TargetLink = targetLink
-    //         };
-
-    //         return Json(reportViewModel);
-    //     }
-
-    //     // POST: Admin/ProcessReport
-    //     [HttpPost]
-    //     [ValidateAntiForgeryToken] // Quan trọng để chống CSRF
-    //     public async Task<IActionResult> ProcessReport(int reportId, string newStatus, string adminAction, string adminNotes, int? reportedUserIdToActOn)
-    //     {
-    //         var report = await _context.Reports
-    //                                    .Include(r => r.ReportedUser) // Để cập nhật UserStatus
-    //                                    .FirstOrDefaultAsync(r => r.ReportId == reportId);
-
-    //         if (report == null)
-    //         {
-    //             TempData["ErrorMessage"] = "Không tìm thấy báo cáo.";
-    //             return RedirectToAction("Reports");
-    //         }
-
-    //         // Cập nhật thông tin xử lý báo cáo
-    //         if (Enum.TryParse<ReportStatus>(newStatus, true, out var parsedStatus))
-    //         {
-    //             report.Status = parsedStatus;
-    //         }
-    //         else
-    //         {
-    //             TempData["ErrorMessage"] = "Trạng thái xử lý không hợp lệ.";
-    //             return RedirectToAction("Reports");
-    //         }
-
-    //         var adminUserIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier); // Lấy ID admin đang đăng nhập
-    //         if (int.TryParse(adminUserIdStr, out int adminId)) {
-    //             report.AdminUserId = adminId;
-    //         }
-
-    //         report.ResolvedAt = DateTime.Now;
-    //         report.AdminNotes = adminNotes;
-    //         // ReportStatus statusToSet;
-
-    //         if ((adminAction == "ban_user" || adminAction == "warn_user") && report.ReportedUser == null)
-    // {
-    //     TempData["ErrorMessage"] = "Không thể thực hiện hành động vì báo cáo không gắn với người dùng.";
-    //     return RedirectToAction("Reports"); 
-    // }
-
-    //         // Thực hiện hành động đối với người dùng hoặc nội dung
-    //         if (report.ReportedUser != null) // Chỉ thực hiện nếu có người dùng liên quan trực tiếp
-    //         {
-    //             var targetUser = report.ReportedUser;
-    //             bool userUpdated = false;
-    //             ReportStatus statusToSet = report.Status; // Khởi tạo với giá trị mặc định
-
-    //             switch (adminAction?.ToLower())
-    //             {
-    //                 case "delete_content": // Giả sử có action này từ form
-    //                     if (report.TargetType == ReportTargetType.Post && report.TargetId.HasValue)
-    //                     {
-    //                         var post = await _context.Posts.FindAsync(report.TargetId.Value);
-    //                         if (post != null) _context.Posts.Remove(post);
-    //                     }
-    //                     else if (report.TargetType == ReportTargetType.Comment && report.TargetId.HasValue)
-    //                     {
-    //                         var comment = await _context.PostComments.FindAsync(report.TargetId.Value);
-    //                         if (comment != null) _context.PostComments.Remove(comment);
-    //                     }
-    //                     statusToSet = ReportStatus.Resolved;
-    //                     break;
-    //                 case "warn_user":
-    //                     // Logic cảnh báo (ví dụ: ghi log, gửi email - ngoài phạm vi code này)
-    //                     // Có thể thêm một trường "WarningCount" vào User model
-    // if (targetUser != null)
-    //                 {
-    //                     // Logic cảnh báo người dùng (userToActUpon)
-    //                     // Ví dụ: userToActUpon.WarningCount++;
-    //                     // _context.Users.Update(userToActUpon);
-    //                     // userStatusChanged = true; // nếu có thay đổi db cho user
-    //                     TempData["InfoMessage"] = $"Đã ghi nhận cảnh báo cho người dùng: {targetUser.FullName ?? targetUser.Username}.";
-    //                     statusToSet = ReportStatus.Resolved;
-    //                 }
-    //                 else
-    //                 {
-    //                     TempData["WarningMessage"] = "Không tìm thấy người dùng để cảnh báo.";
-    //                 }
-    //                     break;
-    //                 case "ban_user":
-    //                 if (targetUser != null)
-    //                 {
-    //                     targetUser.UserStatus = "Bị cấm"; // Đảm bảo giá trị này khớp với logic hiển thị
-    //                     _context.Users.Update(targetUser);
-    //                     userUpdated = true;
-    //                     TempData["InfoMessage"] = $"Đã cấm người dùng: {targetUser.FullName ?? targetUser.Username}.";
-    //                     statusToSet = ReportStatus.Resolved;
-    //                 }
-    //                 else
-    //                 {
-    //                     TempData["WarningMessage"] = "Không tìm thấy người dùng để cấm.";
-    //                 }
-    //                     break;
-    //                 case "ignore_report":
-    //                     // Không làm gì với user/content, chỉ cập nhật trạng thái report
-    //                     if (Enum.TryParse<ReportStatus>(newStatus, true, out var parsedStatusFromDropdown))
-    //             {
-    //                 statusToSet = parsedStatusFromDropdown;
-    //             }
-    //             else
-    //             {
-    //                 // Nếu parse lỗi, có thể mặc định về trạng thái cũ hoặc Pending
-    //                 statusToSet = report.Status; // Giữ nguyên trạng thái cũ nếu parse lỗi
-    //                 TempData["WarningMessage"] = "Trạng thái gửi lên không hợp lệ, giữ nguyên trạng thái cũ.";
-    //             }
-    //                     break;
-    //                 default:
-    //                 // TempData["WarningMessage"] = "Hành động không xác định.";
-    //                 if (Enum.TryParse<ReportStatus>(newStatus, true, out var parsedStatusDefault))
-    //             {
-    //                 statusToSet = parsedStatusDefault;
-    //             }
-    //             else
-    //             {
-    //                 statusToSet = ReportStatus.Resolved; // Mặc định là Đã xử lý nếu không rõ ràng
-    //                 TempData["WarningMessage"] = "Hành động không rõ ràng, mặc định trạng thái là Đã xử lý.";
-    //             }
-    //                 break;
-    //             }
-    //             report.Status = statusToSet;
-    //             if(userUpdated) await _context.SaveChangesAsync(); // Lưu thay đổi user trước
-    //         }
-
-    //         _context.Reports.Update(report);
-    //         await _context.SaveChangesAsync(); // Lưu thay đổi report
-
-    //         TempData["SuccessMessage"] = "Báo cáo đã được xử lý.";
-    //         return RedirectToAction("Reports");
-    //     }
-
-    //     private string TruncateString(string value, int maxLength)
-    //     {
-    //         if (string.IsNullOrEmpty(value)) return value;
-    //         return value.Length <= maxLength ? value : value.Substring(0, maxLength) + "...";
-    //     }
-    // GET: Admin/Reports
     public async Task<IActionResult> Reports(string statusFilter = "Pending", string typeFilter = "all", string targetTypeFilter = "all", int pageNumber = 1, int pageSize = 10, string searchTerm = "")
     {
         ViewData["Title"] = "Quản Lý Báo Cáo - Hệ Thống Quản Trị";
@@ -1052,9 +761,6 @@ public class AdminController : Controller
             statusToSet = report.Status; // Giữ nguyên trạng thái cũ nếu parse lỗi
         }
         
-        // Nếu không có hành động nào được chọn nhưng trạng thái là Pending, và admin chọn ignore_report
-        // thì trạng thái sẽ được cập nhật theo newStatus (đã xử lý ở trên)
-        // Nếu admin chọn "ignore_report" và newStatus là "Resolved" hoặc "Dismissed" thì đó là lựa chọn của họ.
         if (adminAction?.ToLower() == "ignore_report" && !contentActionTaken && !userActionTaken)
         {
              // Không làm gì thêm, trạng thái đã được set từ newStatus
@@ -1244,65 +950,6 @@ public class AdminController : Controller
 
             return Json(viewModel);
         }
-    // // Action để hiển thị trang quản lý người dùng
-    // public async Task<IActionResult> Users(int pageNumber = 1, int pageSize = 10, string searchTerm = "", string roleFilter = "all", string statusFilter = "all")
-    // {
-    //     // Truy vấn cơ bản, lấy tất cả User và include Posts để đếm
-    //     var query = _context.Users.Include(u => u.Posts).AsQueryable();
-
-    //     // TODO: Thêm logic lọc dựa trên searchTerm, roleFilter, statusFilter (sẽ phức tạp hơn)
-    //     // Ví dụ đơn giản cho searchTerm:
-    //     if (!string.IsNullOrEmpty(searchTerm))
-    //     {
-    //         query = query.Where(u => u.FullName.Contains(searchTerm) || u.Email.Contains(searchTerm) || u.Username.Contains(searchTerm));
-    //     }
-
-    //     // Ví dụ đơn giản cho roleFilter (giả sử Role là string):
-    //     if (!string.IsNullOrEmpty(roleFilter) && roleFilter != "all")
-    //     {
-    //         query = query.Where(u => u.Role == roleFilter);
-    //     }
-
-    //     // Ví dụ đơn giản cho statusFilter (giả sử bạn có thuộc tính UserStatus):
-    //     // Bạn cần thêm thuộc tính UserStatus vào model User
-    //     // public string UserStatus { get; set; } // Ví dụ: "Active", "Inactive", "Banned"
-    //     if (!string.IsNullOrEmpty(statusFilter) && statusFilter != "all")
-    //     {
-    //         // query = query.Where(u => u.UserStatus == statusFilter); // Bỏ comment khi có UserStatus
-    //     }
-
-    //     var totalUsers = await query.CountAsync();
-    //     // Tính toán totalPages - RẤT QUAN TRỌNG
-    //     var totalPages = (totalUsers > 0 && pageSize > 0) ? (int)Math.Ceiling((double)totalUsers / pageSize) : 1;
-    //     // Đảm bảo pageNumber không vượt quá totalPages
-    //     if (pageNumber > totalPages)
-    //     {
-    //         pageNumber = totalPages;
-    //     }
-    //     if (pageNumber < 1)
-    //     {
-    //         pageNumber = 1;
-    //     }
-    //     var users = await query
-    //                         .OrderByDescending(u => u.CreatedAt) // Sắp xếp theo người dùng mới nhất
-    //                         .Skip((pageNumber - 1) * pageSize)
-    //                         .Take(pageSize)
-    //                         .ToListAsync();
-
-    //     ViewBag.Users = users;
-    //     ViewBag.TotalUsers = totalUsers;
-    //     ViewBag.PageNumber = pageNumber;
-    //     ViewBag.PageSize = pageSize;
-    //     // ViewBag.TotalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
-    //     ViewBag.TotalPages = totalPages; // Đảm bảo giá trị này đúng
-    //     // Truyền các giá trị filter hiện tại lại cho view để giữ trạng thái trên select box
-    //     ViewBag.SearchTerm = searchTerm;
-    //     ViewBag.RoleFilter = roleFilter;
-    //     ViewBag.StatusFilter = statusFilter;
-
-    //     return View();
-    // }
-    // Action để hiển thị trang quản lý người dùng
 public async Task<IActionResult> Users(int pageNumber = 1, int pageSize = 10, string searchTerm = "", string roleFilter = "all", string statusFilter = "all")
 {
     // Truy vấn cơ bản, lấy tất cả User và include Posts để đếm
@@ -1490,17 +1137,6 @@ public async Task<IActionResult> Users(int pageNumber = 1, int pageSize = 10, st
 
         settingsToSave["RequireCommentApprovalGlobal"] = form.ContainsKey("RequireCommentApprovalGlobal") && (form["RequireCommentApprovalGlobal"].ToString().ToLower() == "true" || form["RequireCommentApprovalGlobal"].ToString().ToLower() == "on");
         settingsToSave["RequireEmailVerification"] = form.ContainsKey("RequireEmailVerification") && (form["RequireEmailVerification"].ToString().ToLower() == "true" || form["RequireEmailVerification"].ToString().ToLower() == "on");
-
-        // KHÔNG LƯU ID bài viết chính sách/điều khoản từ form này nữa
-        // if (int.TryParse(form["PrivacyPolicyPostId"], out int privacyId) && privacyId != 0)
-        //     settingsToSave["PrivacyPolicyPostId"] = privacyId;
-        // else
-        //     settingsToSave["PrivacyPolicyPostId"] = null;
-
-        // if (int.TryParse(form["TermsOfServicePostId"], out int termsId) && termsId != 0)
-        //     settingsToSave["TermsOfServicePostId"] = termsId;
-        // else
-        //     settingsToSave["TermsOfServicePostId"] = null;
 
         settingsToSave["SystemVersion"] = form["SystemVersion"].ToString();
 

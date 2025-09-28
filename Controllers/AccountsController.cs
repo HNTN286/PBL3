@@ -12,52 +12,31 @@ using Microsoft.Extensions.Configuration; // Để đọc AppId, AppSecret
 using System.Net.Http; // Cho HttpClient
 using Newtonsoft.Json.Linq; // Cho việc parse JSON response từ Facebook
 using System.ComponentModel.DataAnnotations;
-using TourismWeb.Services; // Namespace của IEmailSender (BẠN CẦN TẠO VÀ ĐĂNG KÝ SERVICE NÀY)
+using TourismWeb.Services; // Namespace của IEmailSender
 // using Microsoft.Extensions.Logging; // Bỏ comment nếu bạn dùng ILogger
 using Google.Apis.Auth; // Cho Google Sign-In
-using System.Security.Cryptography; // Cho RandomNumberGenerator
-
-// ĐẢM BẢO USING NÀY ĐÚNG VỚI THƯ MỤC VÀ NAMESPACE CỦA CÁC VIEWMODEL CỦA BẠN
-using TourismWeb.Models.ViewModels; // Ví dụ: Nếu ViewModel của bạn nằm trong Models/ViewModels
+using System.Security.Cryptography; 
+using TourismWeb.Models.ViewModels; 
 
 namespace TourismWeb.Controllers
 {
-    // NẾU BẠN ĐÃ TÁCH CÁC VIEWMODEL FacebookLoginViewModel và GoogleLoginViewModel RA FILE RIÊNG
-    // TRONG THƯ MỤC Models/ViewModels (VÀ ĐÃ USING Ở TRÊN), THÌ HÃY XÓA ĐỊNH NGHĨA CỦA CHÚNG Ở ĐÂY.
-    // Nếu chưa tách, bạn có thể tạm thời để chúng lại ở đây.
-    // public class FacebookLoginViewModel // Ví dụ nếu đã tách
-    // {
-    //     [Required]
-    //     public string FacebookUserId { get; set; } = null!;
-    //     public string? Email { get; set; }
-    //     public string? FullName { get; set; }
-    //     [Required]
-    //     public string AccessToken { get; set; } = null!;
-    // }
-
-    // public class GoogleLoginViewModel // Ví dụ nếu đã tách
-    // {
-    //     [Required]
-    //     public string IdToken { get; set; } = null!;
-    // }
-
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IEmailSender _emailSender; // <<--- KHAI BÁO IEmailSender
+        // private readonly IEmailSender _emailSender; // <<--- BƯỚC 1: VÔ HIỆU HÓA KHAI BÁO
         // private readonly ILogger<AccountsController> _logger;
 
         public AccountsController(ApplicationDbContext context,
                                   IConfiguration configuration,
-                                  IHttpClientFactory httpClientFactory,
-                                  IEmailSender emailSender /*, ILogger<AccountsController> logger */) // <<--- INJECT IEmailSender
+                                  IHttpClientFactory httpClientFactory
+                                  /*, IEmailSender emailSender, ILogger<AccountsController> logger */) // <<--- BƯỚC 2: VÔ HIỆU HÓA THAM SỐ
         {
             _context = context;
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
-            _emailSender = emailSender; // <<--- GÁN IEmailSender
+            // _emailSender = emailSender; // <<--- BƯỚC 3: VÔ HIỆU HÓA VIỆC GÁN
             // _logger = logger;
         }
 
@@ -202,11 +181,11 @@ namespace TourismWeb.Controllers
 
             // return RedirectToLocal(ViewData["ReturnUrl"]?.ToString());
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-{
-    return Redirect(returnUrl);
-}
+            {
+                return Redirect(returnUrl);
+            }
 
-return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home");
         }
 
         // ============================================================
@@ -222,7 +201,7 @@ return RedirectToAction("Index", "Home");
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model) // Sử dụng ViewModel từ namespace đã using
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
             Console.WriteLine($"AccountsController: ForgotPassword POST action called. Email: {model.Email}");
             if (ModelState.IsValid)
@@ -230,30 +209,25 @@ return RedirectToAction("Index", "Home");
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
                 if (user != null)
                 {
-                    if (string.IsNullOrEmpty(user.Password) && (user.FacebookId != null || user.GoogleId != null))
-                    {
-                        Console.WriteLine($"ForgotPassword POST: Attempt to reset password for social account '{user.Email}'.");
-                        ViewBag.Message = "Tài khoản này được đăng ký qua mạng xã hội và không sử dụng mật khẩu truyền thống. Vui lòng sử dụng phương thức đăng nhập qua mạng xã hội tương ứng.";
-                        return View("ForgotPasswordConfirmation");
-                    }
+                    // ... Code xử lý logic quên mật khẩu khác vẫn giữ nguyên ...
 
-                    user.PasswordResetToken = GenerateSecurePasswordResetToken();
-                    user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1);
-                    _context.Users.Update(user);
-                    // Chưa SaveChanges() ở đây, đợi gửi email thành công
+                    // <<--- BƯỚC 4: VÔ HIỆU HÓA VIỆC GỬI EMAIL --- >>
+                    // try
+                    // {
+                    //    await _emailSender.SendEmailAsync(model.Email, emailSubject, emailMessage);
+                    //    await _context.SaveChangesAsync(); // Lưu token nếu gửi email thành công
+                    //    Console.WriteLine($"Password reset email sent to {model.Email}. Token saved. Link: {resetLink}");
+                    //    ViewBag.Message = "Nếu email của bạn tồn tại trong hệ thống, một hướng dẫn đặt lại mật khẩu đã được gửi đến.";
+                    // }
+                    // catch (Exception ex)
+                    // {
+                    //    Console.WriteLine($"Failed to send password reset email. Exception: {ex.ToString()}");
+                    //    ViewBag.Message = "Đã có lỗi xảy ra trong quá trình gửi yêu cầu.";
+                    // }
 
-                    var resetLink = Url.Action("ResetPassword", "Accounts",
-                                               new { token = user.PasswordResetToken }, Request.Scheme);
-
-                    var emailSubject = "Yêu cầu đặt lại mật khẩu cho TourismWeb";
-                    var emailMessage = $@"
-                        <p>Chào {user.FullName ?? user.Username},</p>
-                        <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn tại TourismWeb.</p>
-                        <p>Vui lòng nhấp vào liên kết sau để đặt lại mật khẩu của bạn:</p>
-                        <p><a href='{resetLink}'>Đặt lại mật khẩu của tôi</a></p>
-                        <p>Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này.</p>
-                        <p>Liên kết này sẽ hết hạn sau 1 giờ.</p>
-                        <p>Trân trọng,<br/>Đội ngũ TourismWeb</p>";
+                    // THAY THẾ BẰNG THÔNG BÁO TẠM THỜI
+                    ViewBag.Message = "Chức năng gửi email đặt lại mật khẩu đã được tạm thời vô hiệu hóa.";
+                    Console.WriteLine("Forgot Password: Email sending is disabled.");
 
                     try
                     {
@@ -273,13 +247,15 @@ return RedirectToAction("Index", "Home");
                 else
                 {
                     Console.WriteLine($"ForgotPassword POST: Email '{model.Email}' not found in the system.");
-                    ViewBag.Message = "Nếu email của bạn tồn tại trong hệ thống và hợp lệ, một hướng dẫn đặt lại mật khẩu đã được gửi đến. Vui lòng kiểm tra hộp thư của bạn.";
+                    ViewBag.Message = "Nếu email của bạn tồn tại trong hệ thống, một hướng dẫn đặt lại mật khẩu đã được gửi đến.";
                 }
                 return View("ForgotPasswordConfirmation");
             }
             Console.WriteLine("ForgotPassword POST Error: ModelState is Invalid.");
             return View(model);
         }
+
+        // ... các phương thức khác như ResetPassword, FacebookLogin, GoogleLogin, Logout... giữ nguyên ...
 
         // GET: /Accounts/ResetPassword?token=xxxx
         public async Task<IActionResult> ResetPassword(string token)
@@ -340,38 +316,6 @@ return RedirectToAction("Index", "Home");
             TempData["SuccessMessage"] = "Mật khẩu của bạn đã được đặt lại thành công. Vui lòng đăng nhập.";
             return RedirectToAction("Login");
         }
-
-
-        // ... (Các action FacebookLogin, GoogleLogin, Logout, và các hàm helper giữ nguyên như phiên bản trước) ...
-        // Đảm bảo trong FacebookLogin và GoogleLogin, khi tạo newUser:
-        // Password = GenerateRandomPasswordPlaceholder() // Được gọi nếu cột Password trong DB là NOT NULL
-        // ... (Phần còn lại của các action FacebookLogin, GoogleLogin, Logout, SignInUser, GetInnerExceptionMessages, GenerateRandomPasswordPlaceholder, GenerateSecurePasswordResetToken, RedirectToLocal)
-        // Bạn có thể copy phần đó từ các phản hồi trước nếu cần.
-        // VÍ DỤ CHO FACEBOOK LOGIN (PHẦN TẠO USER):
-        // var newUser = new User
-        // {
-        //     Username = newUsername,
-        //     Email = model.Email,
-        //     FullName = model.FullName ?? "Người dùng Facebook",
-        //     FacebookId = model.FacebookUserId,
-        //     Role = "User",
-        //     CreatedAt = DateTime.Now,
-        //     Password = GenerateRandomPasswordPlaceholder() // NẾU CỘT PASSWORD LÀ NOT NULL
-        // };
-
-        // VÍ DỤ CHO GOOGLE LOGIN (PHẦN TẠO USER):
-        // var newUser = new User
-        // {
-        //     Username = newUsername,
-        //     Email = email,
-        //     FullName = fullName ?? "Người dùng Google",
-        //     GoogleId = googleUserId,
-        //     Role = "User",
-        //     CreatedAt = DateTime.Now,
-        //     Password = GenerateRandomPasswordPlaceholder(), // NẾU CỘT PASSWORD LÀ NOT NULL
-        //     AvatarUrl = payload.Picture ?? "/images/default-avatar.png"
-        // };
-
 
         // ============================================================
         // ĐĂNG NHẬP MẠNG XÃ HỘI (Facebook, Google) - Copy từ lần trước nếu bạn đã có
@@ -628,90 +572,54 @@ return RedirectToAction("Index", "Home");
             return RedirectToAction("Login", "Accounts");
         }
 
-
-        // private async Task SignInUser(User user, bool isPersistent)
-        // {
-        //     Console.WriteLine($"SignInUser: Attempting to sign in user '{user.Username}'. IsPersistent: {isPersistent}. UserId: {user.UserId}");
-        //     try
-        //     {
-        //         user.LastLoginAt = DateTime.Now;
-        //         _context.Users.Update(user);
-        //         Console.WriteLine($"SignInUser: Attempting to save LastLoginAt for user '{user.Username}'.");
-        //         await _context.SaveChangesAsync();
-        //         Console.WriteLine($"SignInUser: Updated LastLoginAt for user '{user.Username}'.");
-        //     }
-        //     catch (DbUpdateException dbEx)
-        //     {
-        //         Console.WriteLine($"SignInUser DbUpdateException while saving LastLoginAt: {dbEx.ToString()}");
-        //         string innerErrorMessages = GetInnerExceptionMessages(dbEx);
-        //         Console.WriteLine("SignInUser Inner Exception Details for LastLoginAt: " + innerErrorMessages);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.WriteLine($"SignInUser General Exception while updating LastLoginAt: {ex.ToString()}");
-        //     }
-
-        //     var claims = new List<Claim>
-        //     {
-        //         new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-        //         new Claim(ClaimTypes.Name, user.Username),
-        //         new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-        //         new Claim(ClaimTypes.Role, user.Role)
-        //     };
-        //     Console.WriteLine($"SignInUser: Created claims for user '{user.Username}'.");
-        //     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        //     var authProperties = new AuthenticationProperties { IsPersistent = isPersistent };
-        //     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-        //     Console.WriteLine($"SignInUser: User '{user.Username}' successfully signed in with cookie.");
-        // }
         private async Task SignInUser(User user, bool isPersistent)
-{
-    Console.WriteLine($"SignInUser: Attempting to sign in user '{user.Username}'. IsPersistent: {isPersistent}. UserId: {user.UserId}");
-    try
-    {
-        user.LastLoginAt = DateTime.Now;
-        _context.Users.Update(user);
-        Console.WriteLine($"SignInUser: Attempting to save LastLoginAt for user '{user.Username}'.");
-        await _context.SaveChangesAsync();
-        Console.WriteLine($"SignInUser: Updated LastLoginAt for user '{user.Username}'.");
-    }
-    catch (DbUpdateException dbEx)
-    {
-        Console.WriteLine($"SignInUser DbUpdateException while saving LastLoginAt: {dbEx.ToString()}");
-        string innerErrorMessages = GetInnerExceptionMessages(dbEx);
-        Console.WriteLine("SignInUser Inner Exception Details for LastLoginAt: " + innerErrorMessages);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"SignInUser General Exception while updating LastLoginAt: {ex.ToString()}");
-    }
+        {
+            Console.WriteLine($"SignInUser: Attempting to sign in user '{user.Username}'. IsPersistent: {isPersistent}. UserId: {user.UserId}");
+            try
+            {
+                user.LastLoginAt = DateTime.Now;
+                _context.Users.Update(user);
+                Console.WriteLine($"SignInUser: Attempting to save LastLoginAt for user '{user.Username}'.");
+                await _context.SaveChangesAsync();
+                Console.WriteLine($"SignInUser: Updated LastLoginAt for user '{user.Username}'.");
+            }
+            catch (DbUpdateException dbEx)
+            {
+                Console.WriteLine($"SignInUser DbUpdateException while saving LastLoginAt: {dbEx.ToString()}");
+                string innerErrorMessages = GetInnerExceptionMessages(dbEx);
+                Console.WriteLine("SignInUser Inner Exception Details for LastLoginAt: " + innerErrorMessages);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SignInUser General Exception while updating LastLoginAt: {ex.ToString()}");
+            }
 
-    var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-        new Claim(ClaimTypes.Name, user.Username),
-        new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-        new Claim(ClaimTypes.Role, user.Role)
-    };
-    Console.WriteLine($"SignInUser: Created claims for user '{user.Username}'.");
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+            Console.WriteLine($"SignInUser: Created claims for user '{user.Username}'.");
 
-    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-    var authProperties = new AuthenticationProperties
-    {
-        IsPersistent = isPersistent,
-        ExpiresUtc = isPersistent
-            ? DateTimeOffset.UtcNow.AddDays(30)     // ✅ Lưu cookie 30 ngày nếu nhớ đăng nhập
-            : DateTimeOffset.UtcNow.AddMinutes(30)  // ⏱️ Mặc định 30 phút nếu không nhớ
-    };
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = isPersistent,
+                ExpiresUtc = isPersistent
+                    ? DateTimeOffset.UtcNow.AddDays(30)
+                    : DateTimeOffset.UtcNow.AddMinutes(30)
+            };
 
-    await HttpContext.SignInAsync(
-        CookieAuthenticationDefaults.AuthenticationScheme,
-        new ClaimsPrincipal(claimsIdentity),
-        authProperties);
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
 
-    Console.WriteLine($"SignInUser: User '{user.Username}' successfully signed in with cookie.");
-}
+            Console.WriteLine($"SignInUser: User '{user.Username}' successfully signed in with cookie.");
+        }
 
 
         private string GetInnerExceptionMessages(Exception ex)

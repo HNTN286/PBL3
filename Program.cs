@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TourismWeb.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging.Console;
-using TourismWeb.Services; // <<--- THÊM USING CHO SERVICE CỦA BẠN
+using TourismWeb.Services; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,14 +86,5 @@ app.UseEndpoints(endpoints =>
         pattern: "{controller=Home}/{action=Index}/{id?}");
     // endpoints.MapControllers(); // Dòng này không cần thiết nếu bạn đã dùng MapControllerRoute
 });
-
-// app.MapStaticAssets(); // Dòng này có thể không cần thiết, UseStaticFiles() đã xử lý
-
-// app.MapControllerRoute( // Bạn đã có MapControllerRoute "default" ở trên rồi, dòng này lặp lại
-//     name: "default",
-//     pattern: "{controller=Home}/{action=Index}/{id?}")
-//     .WithStaticAssets();
-
-// TestConnection.Run(); // Dòng này để làm gì? Nếu là test, nên có điều kiện hoặc gỡ bỏ khi deploy
 
 app.Run();
