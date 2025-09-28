@@ -175,10 +175,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-**Developer:** [Nguyen Nhu Quynh]
-- **Email:** [nguyennhuquynh11111990@gmail.com]
-- **LinkedIn:** [www.linkedin.com/in/bkdn23-quynh]
-- **GitHub:** [@nhuquynhdayyy](https://github.com/nhuquynhdayyy)
+**Developer:** [Ho Nguyen Thao Nguyen]
+- **Email:** [28.6nguyen@gmail.com]
+- **GitHub:** [@HNTN286](https://github.com/HNTN286)
 
 ---
 
